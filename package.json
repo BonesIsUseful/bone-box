@@ -1,0 +1,70 @@
+{
+	"name": "bone-box",
+	"version": "0.2.01",
+	"description": "BoneBox is an online tool for sketching and sharing instrumental music.",
+	"author": "BonesIsUseful",
+	"license": "MIT",
+	"homepage": "https://github.com/BonesIsUseful/bone-box",
+	"type": "module",
+	"main": "electron_main.cjs",
+	"scripts": {
+		"build": "npm run build-win",
+		"build-synth": "bash ./compile_beepbox_synth.sh",
+		"build-player": "bash ./compile_beepbox_player.sh",
+		"build-editor": "bash ./compile_beepbox_editor.sh",
+		"build-win": "powershell -ExecutionPolicy Bypass -File ./build.ps1",
+		"serve": "npx http-server website -p 3000 --cors -c-1 -o",
+		"server": "node server.cjs",
+		"dev": "concurrently -n \"frontend,party\" -c \"cyan,magenta\" \"npm run serve\" \"npm run server\"",
+		"electron": "electron .",
+		"electron-dev": "concurrently -n \"party,electron\" -c \"magenta,cyan\" \"npm run server\" \"electron .\"",
+		"dist": "npm run build && npm run package && \"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe\" installer.iss",
+		"package": "npx electron-packager . BoneBox --platform=win32 --arch=x64 --out=build --overwrite --asar --ignore=\"(pixel-art-helper|dist|\\\\.build_cache)\"",
+		"release": "node release.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/BonesIsUseful/bone-box.git"
+	},
+	"devDependencies": {
+		"@rollup/plugin-node-resolve": "^9.0.0",
+		"electron": "^30.0.0",
+		"electron-builder": "^26.8.1",
+		"electron-installer-windows": "^3.0.0",
+		"electron-packager": "^17.1.2",
+		"rollup": "^2.32.1",
+		"rollup-plugin-sourcemaps": "^0.6.3",
+		"terser": "^5.3.8",
+		"typescript": "^4.9.5"
+	},
+	"dependencies": {
+		"@types/select2": "^4.0.53",
+		"concurrently": "^9.2.1",
+		"electron-log": "^5.1.1",
+		"electron-updater": "^6.1.7",
+		"express": "^5.2.1",
+		"imperative-html": "^0.1.0",
+		"select2": "^4.0.13",
+		"socket.io": "^4.8.3"
+	},
+	"build": {
+		"appId": "com.bonesisuseful.bonebox",
+		"productName": "BoneBox",
+		"directories": {
+			"output": "dist"
+		},
+		"files": [
+			"website/**/*",
+			"electron_main.cjs",
+			"package.json"
+		],
+		"win": {
+			"target": "nsis",
+			"artifactName": "BoneBox - 0.2 (Setup).exe"
+		},
+		"nsis": {
+			"oneClick": true,
+			"perMachine": true
+		}
+	}
+}

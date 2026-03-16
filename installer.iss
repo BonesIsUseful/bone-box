@@ -1,12 +1,12 @@
 [Setup]
 AppName=BoneBox
-AppVersion=0.2.01
+AppVersion=0.2.1
 AppPublisher=BonesIsUseful
 AppId={{741743E5-9D42-4A9B-B03C-D8DCEAF76A22}
 DefaultDirName={autopf}\BoneBox
 DefaultGroupName=BoneBox
 OutputDir=.
-OutputBaseFilename=BoneBox - 0.2.01 (Setup)
+OutputBaseFilename=BoneBox - 0.2.1 (Setup)
 Compression=lzma2
 SolidCompression=yes
 ArchitecturesInstallIn64BitMode=x64

@@ -1,6 +1,6 @@
 {
 	"name": "bone-box",
-	"version": "0.2.14",
+	"version": "0.2.15",
 	"description": "BoneBox is an online tool for sketching and sharing instrumental music.",
 	"author": "BonesIsUseful",
 	"license": "MIT",
@@ -18,7 +18,7 @@
 		"dev": "concurrently -n \"frontend,party\" -c \"cyan,magenta\" \"npm run serve\" \"npm run server\"",
 		"electron": "electron .",
 		"electron-dev": "concurrently -n \"party,electron\" -c \"magenta,cyan\" \"npm run server\" \"electron .\"",
-		"dist": "npm run build && npm run package && \"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe\" installer.iss",
+		"dist": "npm run build && electron-builder --win",
 		"package": "npx electron-packager . BoneBox --platform=win32 --arch=x64 --out=electron-build --overwrite --asar --ignore=\"(pixel-art-helper|dist|\\\\.build_cache|electron-build)\"",
 		"release": "node release.js"
 	},
@@ -56,11 +56,18 @@
 		"files": [
 			"website/**/*",
 			"electron_main.cjs",
+			"preload.cjs",
 			"package.json"
 		],
+		"publish": [
+			{
+				"provider": "github",
+				"owner": "BonesIsUseful",
+				"repo": "bone-box"
+			}
+		],
 		"win": {
-			"target": "nsis",
-			"artifactName": "BoneBox - 0.2 (Setup).exe"
+			"target": "nsis"
 		},
 		"nsis": {
 			"oneClick": true,

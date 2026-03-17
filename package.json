@@ -19,7 +19,7 @@
 		"electron": "electron .",
 		"electron-dev": "concurrently -n \"party,electron\" -c \"magenta,cyan\" \"npm run server\" \"electron .\"",
 		"dist": "npm run build && npm run package && \"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe\" installer.iss",
-		"package": "npx electron-packager . BoneBox --platform=win32 --arch=x64 --out=out/dist --overwrite --asar --ignore=\"(pixel-art-helper|dist|\\\\.build_cache|electron-build|build|out)\"",
+		"package": "npx electron-packager . BoneBox --platform=win32 --arch=x64 --out=electron-build --overwrite --asar --ignore=\"(pixel-art-helper|dist|\\\\.build_cache|electron-build)\"",
 		"release": "node release.js"
 	},
 	"repository": {

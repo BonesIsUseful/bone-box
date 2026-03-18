@@ -13,7 +13,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    icon: path.join(__dirname, 'website/BoneBox_logo_32.png'),
+    icon: path.join(__dirname, 'website/icon_32.png'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -22,15 +22,20 @@ function createWindow() {
     title: "BoneBox"
   });
 
-  // Load the app: from localhost:3000 in dev, or from file in production
+  // Load the app: from GitHub Pages for the best experience, or from file as fallback
   const version = app.getVersion();
+  const prodUrl = 'https://bonesisuseful.github.io/bone-box/';
+  
   if (!app.isPackaged) {
-    mainWindow.loadURL('http://localhost:3000').catch(() => {
+    mainWindow.loadURL('http://localhost:3000/bone-box/').catch(() => {
       // Fallback if dev server is not running
-      mainWindow.loadFile(path.join(__dirname, 'index.html'), { query: { v: version } });
+      mainWindow.loadURL(prodUrl);
     });
   } else {
-    mainWindow.loadFile(path.join(__dirname, 'index.html'), { query: { v: version } });
+    // Loaded live site in the app, but fallback locally if no internet
+    mainWindow.loadURL(prodUrl).catch(() => {
+      mainWindow.loadFile(path.join(__dirname, 'index.html'), { query: { v: version } });
+    });
   }
 
   ipcMain.handle('get-app-version', () => version);

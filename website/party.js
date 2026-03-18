@@ -3,11 +3,11 @@
 
   // ── Config ─────────────────────────────────────────────────────────────────
   // ── Config ─────────────────────────────────────────────────────────────────
-  const isLocal = window.location.hostname === "localhost" || window.location.protocol === "file:";
+  const isLocal = window.location.hostname === "localhost" || window.location.protocol === "file:" || !!window.electronAPI;
   
   // Use a public server if available (e.g. your hosted backend), otherwise fallback to localhost for devs.
   // Replace this URL with your real production server URL (e.g. https://bonebox-party.onrender.com)
-  const PRODUCTION_SERVER = ""; 
+  const PRODUCTION_SERVER = "https://bonebox-collab.onrender.com"; 
   const PARTY_SERVER = (isLocal || !PRODUCTION_SERVER) ? "http://localhost:3001" : PRODUCTION_SERVER;
   
   const DEBOUNCE_MS = 400; // ms to wait before broadcasting a song change

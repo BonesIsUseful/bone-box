@@ -51,7 +51,7 @@
 		"directories": {
 			"output": "dist"
 		},
-		"icon": "website/icon_maskable_192.png",
+		"icon": "website/icon_256.png",
 		"files": [
 			"index.html",
 			"editor/",
@@ -69,7 +69,7 @@
 			}
 		],
 		"win": {
-			"target": "nsis"
+			"target": "portable"
 		},
 		"nsis": {
 			"oneClick": true,

@@ -178,14 +178,10 @@
 
             return true;
         }
-
-        if (browserHasRequiredFeatures()) {
-            // Go ahead and load js beepbox editor interface:
-            var fileref = document.createElement("script");
-            fileref.setAttribute("type", "module");
-            fileref.setAttribute("src", "./editor/main.js");
-            document.head.appendChild(fileref);
-        } else {
+    </script>
+    <script type="module" src="./editor/main.js"></script>
+    <script type="text/javascript">
+        if (!browserHasRequiredFeatures()) {
             document.getElementById("beepboxEditorContainer").innerHTML = "Sorry, BoneBox doesn't support your browser. Try a recent version of Chrome, Firefox, Edge, Safari, or Opera.";
         }
 

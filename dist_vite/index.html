@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel='shortcut icon' type='image/x-icon' href='/bone-box/assets/favicon-2i6dk2y5.ico' />
+    <!-- CDN for jQuery and select2 -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/js/select2.min.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BoneBox</title>
+    <meta name="application-name" content="BoneBox" />
+    <meta name="apple-mobile-web-app-title" content="BoneBox">
+    <meta name="description" content="BoneBox is an online tool for sketching and sharing instrumental music." />
+    <meta name="keywords"
+        content="chiptune, instrumental, music, song, melody, composition, tool, free, square wave, NES, NSF, BoneBox, bonebox, BeepBox, beepbox" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#444" />
+    <meta name="msapplication-TileColor" content="#603cba" />
+    <meta name="msapplication-config" content="data:text/xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxicm93c2VyY29uZmlnPg0KICAgIDxtc2FwcGxpY2F0aW9uPg0KICAgICAgICA8dGlsZT4NCiAgICAgICAgICAgIDxzcXVhcmUxNTB4MTUwbG9nbyBzcmM9Ii9pY29uX3dpbmRvd3NfMTUwLnBuZyIvPg0KICAgICAgICAgICAgPFRpbGVDb2xvcj4jNjAzY2JhPC9UaWxlQ29sb3I+DQogICAgICAgIDwvdGlsZT4NCiAgICA8L21zYXBwbGljYXRpb24+DQo8L2Jyb3dzZXJjb25maWc+DQo=" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/bone-box/assets/apple-touch-icon-hYvSxmqV.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/bone-box/assets/icon_32-C_3Z4rGA.png" />
+    <link rel="manifest" href="/bone-box/assets/manifest-CxBcb0MM.webmanifest" />
+    <link href="https://fonts.googleapis.com/css?family=B612" rel="stylesheet" media="none"
+        onload="if (this.media != 'all') this.media='all';" /> <!-- this is a trick to load CSS asynchronously. -->
+    <style type="text/css">
+        html {
+            background: var(--page-margin, black);
+            overflow-x: hidden;
+            font-size: large;
+            font-family: 'B612', sans-serif;
+            line-height: 1.3;
+            color: var(--primary-text, white);
+        }
+
+        body {
+            margin: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            align-content: center;
+        }
+
+        #beepboxEditorContainer {
+            min-height: 645px;
+            overflow: auto;
+            background: var(--editor-background, black);
+            width: 100%;
+            max-width: 710px;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+
+        #text-content {
+            overflow: auto;
+            background: var(--editor-background, black);
+            width: 100%;
+            max-width: 710px;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+
+        h1 {
+            font-size: 1.7rem;
+            text-align: center;
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+            -webkit-text-stroke-width: 0;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+            -webkit-text-stroke-width: 0;
+        }
+
+        .centerDiv {
+            margin: 0px auto;
+        }
+
+        a {
+            color: var(--link-accent, #98f);
+        }
+
+        .donation form {
+            display: inline;
+        }
+
+        .donation input[type="submit"] {
+            -webkit-appearance: none;
+            background: none;
+            border: none;
+            font-family: inherit;
+            font-size: inherit;
+            color: var(--link-accent, #98f);
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* wide screen */
+        @media (min-width: 711px) {
+            html {
+                width: 100%;
+            }
+
+            body {
+                width: 100%;
+            }
+
+            .column-container {
+                width: 710px;
+                display: flex;
+                gap: 25px;
+            }
+
+            .instructions-column {
+                min-width: 0;
+            }
+        }
+
+        /* narrow screen */
+        @media (max-width: 710px) {
+            body {
+                width: 100%;
+            }
+
+            p,
+            .donation {
+                margin: 1em 0.5em;
+            }
+
+            .column-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+  <script type="module" crossorigin src="/bone-box/assets/main-B7A_tkJo.js"></script>
+</head>
+
+<body>
+    <div id="beepboxEditorContainer">
+        <noscript>
+            Sorry, BoneBox requires a JavaScript-enabled browser.
+        </noscript>
+    </div>
+
+
+    <!--
+    Instead of loading js beepbox editor interface directly, test for browser support.
+    <script type="text/javascript" src="beepbox_editor.min.js"></script>
+    -->
+    <script type="text/javascript">
+
+        function browserHasRequiredFeatures() {
+            "use strict";
+            if (window.AudioContext == undefined && window.webkitAudioContext == undefined) {
+                return false;
+            }
+
+            try {
+                eval("class T {}");
+                eval("const a = () => 0");
+                eval("for (const a of []);");
+            } catch (error) {
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+    <script type="text/javascript">
+        if (!browserHasRequiredFeatures()) {
+            document.getElementById("beepboxEditorContainer").innerHTML = "Sorry, BoneBox doesn't support your browser. Try a recent version of Chrome, Firefox, Edge, Safari, or Opera.";
+        }
+
+        // If the page was loaded with an old song version that old versions of BeepBox support,
+        // update the links to the old versions so that they'll open the song.
+        if (/^#[1-6]/.test(location.hash)) {
+            document.getElementById("linkTo2_3").href += location.hash;
+        }
+        if (/^#[1-8]/.test(location.hash)) {
+            document.getElementById("linkTo3_0").href += location.hash;
+        }
+    </script>
+
+    <!-- BoneBox Party: real-time collaboration -->
+    <script src="./website/party.js"></script>
+</body>
+
+</html>

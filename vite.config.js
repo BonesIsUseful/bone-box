@@ -3,9 +3,9 @@ import { resolve } from 'path';
 
 export default defineConfig({
   root: './',
-  base: './',
+  base: '/bone-box/',
   build: {
-    outDir: 'dist',
+    outDir: 'dist_vite',
     emptyOutDir: true,
     rollupOptions: {
       input: {

@@ -2,7 +2,14 @@
   "use strict";
 
   // ── Config ─────────────────────────────────────────────────────────────────
-  const PARTY_SERVER = "http://localhost:3001";
+  // ── Config ─────────────────────────────────────────────────────────────────
+  const isLocal = window.location.hostname === "localhost" || window.location.protocol === "file:";
+  
+  // Use a public server if available (e.g. your hosted backend), otherwise fallback to localhost for devs.
+  // Replace this URL with your real production server URL (e.g. https://bonebox-party.onrender.com)
+  const PRODUCTION_SERVER = ""; 
+  const PARTY_SERVER = (isLocal || !PRODUCTION_SERVER) ? "http://localhost:3001" : PRODUCTION_SERVER;
+  
   const DEBOUNCE_MS = 400; // ms to wait before broadcasting a song change
 
   // ── State ──────────────────────────────────────────────────────────────────
@@ -20,11 +27,19 @@
   // ── Wait for Socket.io client to load, then boot ───────────────────────────
   function waitForSocketIO(cb) {
     if (window.io) { cb(); return; }
+    
+    // In production (GitHub Pages), skip trying localhost if no prod server is set
+    if (!isLocal && !PRODUCTION_SERVER) {
+       console.log("[BoneBox Party] Collaboration disabled (no production server set).");
+       return;
+    }
+
     const script = document.createElement("script");
     script.src = PARTY_SERVER + "/socket.io/socket.io.js";
     script.onload = cb;
     script.onerror = () => {
-      showToast("⚠️ Could not reach party server. Is it running?", "error");
+      console.warn("[BoneBox Party] Could not load Socket.IO client from " + PARTY_SERVER);
+      showToast("⚠️ Could not reach party server.", "error");
     };
     document.head.appendChild(script);
   }

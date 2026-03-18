@@ -71,11 +71,23 @@ def main():
     if run_command("git add .", "Staging Changes"):
         if run_command(f'git commit -m "{full_message}"', "Committing"):
             if args.push:
-                run_command("git push", "Pushing to GitHub")
-                print(f"\n🚀 Release v{new_v} successfully pushed!")
+                if run_command("git push", "Pushing to GitHub"):
+                    print(f"\n🚀 Version v{new_v} pushed to GitHub!")
+                    
+                    # Create GitHub Release if build was generated
+                    if args.dist:
+                        release_cmd = f'gh release create v{new_v} dist_final/*.exe --title "v{new_v} - {args.message}" --notes "{args.message}"'
+                        if run_command(release_cmd, "Creating GitHub Release"):
+                            print(f"\n🎁 Standalone build attached to GitHub Release v{new_v}!")
+                        else:
+                            print("\n⚠️ Failed to create GitHub Release. You can try manually via the web.")
+                else:
+                    print(f"\n⚠️ Version bumped and committed, but 'git push' failed.")
+                    print("Please check your git credentials and try pushing manually.")
             else:
                 print(f"\n✅ Version bumped to v{new_v} and committed locally.")
-                print("Run 'git push' to make it live.")
+                print("Note: GitHub Release wasn't created because -p (push) was not used.")
+                print("Run 'git push' and 'gh release create' manually if desired.")
 
 if __name__ == "__main__":
     main()

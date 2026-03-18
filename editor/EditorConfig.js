@@ -23,7 +23,7 @@ export function prettyNumber(value) {
 }
 
 export class EditorConfig {
-     static  __initStatic() {this.version = new URLSearchParams(window.location.search).get("v") || "0.2.17"}
+     static  __initStatic() {this.version = new URLSearchParams(window.location.search).get("v") || "0.2.18"}
      static  __initStatic2() {this.versionDisplayName = "BoneBox - " + EditorConfig.version}
 
      static  __initStatic3() {this.releaseNotesURL = "https://jummbus.bitbucket.io/patch_notes/" + EditorConfig.version + ".html"}

@@ -27,10 +27,7 @@ function createWindow() {
   const prodUrl = 'https://bonesisuseful.github.io/bone-box/';
   
   if (!app.isPackaged) {
-    mainWindow.loadURL('http://localhost:3000/bone-box/').catch(() => {
-      // Fallback if dev server is not running
-      mainWindow.loadURL(prodUrl);
-    });
+    mainWindow.loadURL(prodUrl);
   } else {
     // Loaded live site in the app, but fallback locally if no internet
     mainWindow.loadURL(prodUrl).catch(() => {

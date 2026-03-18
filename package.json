@@ -14,8 +14,10 @@
 		"server": "node server.cjs",
 		"party": "concurrently -n \"frontend,party\" -c \"cyan,magenta\" \"npm run dev\" \"npm run server\"",
 		"electron": "electron .",
-		"electron-dev": "concurrently -n \"party,electron\" -c \"magenta,cyan\" \"npm run party\" \"wait-on -t 10000 http://localhost:3000 && electron .\"",
-		"dist": "npm run build && electron-builder --win",
+		"electron-dev": "electron .",
+		"clean": "powershell -Command \"Stop-Process -Name BoneBox, electron -ErrorAction SilentlyContinue; Remove-Item -Recurse -Force dist, dist_vite -ErrorAction SilentlyContinue; exit 0\"",
+		"dist": "npm run clean && npm run build && electron-builder --win",
+		"package": "npm run clean && npm run build && npx electron-packager . \"BoneBox\" --platform=win32 --arch=x64 --out=\"dist_unpacked\" --overwrite --icon=\"website/favicon.ico\"",
 		"release": "node release.js"
 	},
 	"repository": {

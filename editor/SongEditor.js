@@ -4274,9 +4274,7 @@ export class SongEditor {
             this._inviteLinkRow.style.display = "flex";
             this._roomCodeInput.value = state.roomCode || "";
             // If running on localhost or file (Electron), use the public landing page for sharing
-            const publicBase = (window.location.hostname === "localhost" || window.location.protocol === "file:") 
-                ? "https://bonesisuseful.github.io/bone-box/invite.html" 
-                : window.location.origin + window.location.pathname.replace("index.html", "") + "invite.html";
+            const publicBase = "https://bonesisuseful.github.io/bone-box/invite.html";
             this._inviteLinkInput.value = publicBase + "?party=" + state.roomCode;
             this._joinRoomRow.style.display = "none";
         } else {

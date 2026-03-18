@@ -1,0 +1,23 @@
+.dropbox
+.DS_Store
+.vs
+/node_modules
+/website/**/beepbox*.js
+/website/**/beepbox*.js.map
+/website/beepbox_offline.html
+/editor/*.js.map
+/player/*.js.map
+/synth/*.js.map
+/**/*.ts.bak
+/**/*.html.bak
+/build
+/electron-build
+
+# Electron build output
+/dist
+/out
+
+# Windows
+Thumbs.db
+.env
+BoneBox*.exe

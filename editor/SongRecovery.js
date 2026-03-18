@@ -1,0 +1,175 @@
+
+
+
+import { Song } from "../synth/synth.js";
+
+	
+
+
+
+
+
+
+
+
+
+
+
+const versionPrefix = "songVersion: ";
+const maximumSongCount = 8;
+const maximumWorkPerVersion = 3 * 60 * 1000; // 3 minutes
+const minimumWorkPerSpan = 1 * 60 * 1000; // 1 minute
+
+function keyIsVersion(key) {
+	return key.indexOf(versionPrefix) == 0;
+}
+
+function keyToVersion(key) {
+	return JSON.parse(key.substring(versionPrefix.length));
+}
+
+export function versionToKey(version) {
+	return versionPrefix + JSON.stringify(version);
+}
+
+export function generateUid() {
+	// Not especially robust, but simple and effective!
+	return ((Math.random() * (-1 >>> 0)) >>> 0).toString(32);
+}
+
+export function errorAlert(error) {
+	console.warn(error);
+	window.alert("Whoops, the song data appears to have been corrupted! Please try to recover the last working version of the song from the \"Recover Recent Song...\" option in BeepBox's \"File\" menu.");
+}
+
+
+function compareSongs(a, b) {
+	return b.versions[0].time - a.versions[0].time;
+}
+
+function compareVersions(a, b) {
+	return b.time - a.time;
+}
+		
+export class SongRecovery {constructor() { SongRecovery.prototype.__init.call(this); }
+	
+		
+	 __init() {this._song = new Song()}
+		
+	 static getAllRecoveredSongs() {
+		const songs = [];
+		const songsByUid = {};
+		for (let i = 0; i < localStorage.length; i++) {
+			const itemKey = localStorage.key(i);
+			if (keyIsVersion(itemKey)) {
+				const version = keyToVersion(itemKey);
+				let song = songsByUid[version.uid];
+				if (song == undefined) {
+						song = {versions: []};
+					songsByUid[version.uid] = song;
+					songs.push(song);
+				}
+				song.versions.push(version);
+			}
+		}
+		for (const song of songs) {
+			song.versions.sort(compareVersions);
+		}
+		songs.sort(compareSongs);
+		return songs;
+	}
+		
+	 saveVersion(uid, name, songData) {
+		const newName = name;
+		const newTime = Math.round(Date.now());
+			
+		clearTimeout(this._saveVersionTimeoutHandle);
+		this._saveVersionTimeoutHandle = setTimeout(() => {
+			try {
+				// Ensure that the song is not corrupted.
+				this._song.fromBase64String(songData);
+			} catch (error) {
+				errorAlert(error);
+				return;
+			}
+				
+			const songs = SongRecovery.getAllRecoveredSongs();
+			let currentSong = null;
+			for (const song of songs) {
+				if (song.versions[0].uid == uid) {
+					currentSong = song;
+				}
+			}
+			if (currentSong == null) {
+					currentSong = {versions: []};
+				songs.unshift(currentSong);
+			}
+			let versions = currentSong.versions;
+				
+			let newWork = 1000; // default to 1 second of work for the first change.
+			if (versions.length > 0) {
+				const mostRecentTime = versions[0].time;
+				const mostRecentWork = versions[0].work;
+				newWork = mostRecentWork + Math.min(maximumWorkPerVersion, newTime - mostRecentTime);
+			}
+				
+			const newVersion = { uid: uid, name: newName, time: newTime, work: newWork };
+			const newKey = versionToKey(newVersion);
+			versions.unshift(newVersion);
+			localStorage.setItem(newKey, songData);
+				
+			// Consider deleting an old version to free up space.
+			let minSpan = minimumWorkPerSpan; // start out with a gap between versions.
+			const spanMult = Math.pow(2, 1 / 2); // Double the span every 2 versions back.
+			for (var i = 1; i < versions.length; i++) {
+				const currentWork = versions[i].work;
+				const olderWork = (i == versions.length - 1) ? 0.0 : versions[i + 1].work;
+				// If not enough work happened between two versions, discard one of them.
+				if (currentWork - olderWork < minSpan) {
+					let indexToDiscard = i;
+					if (i < versions.length - 1) {
+						const currentTime = versions[i].time;
+						const newerTime = versions[i - 1].time;
+						const olderTime = versions[i + 1].time;
+						// Weird heuristic: Between the three adjacent versions, prefer to keep
+						// the newest and the oldest, discarding the middle one (i), unless
+						// there is a large gap of time between the newest and middle one, in
+						// which case the middle one represents the end of a span of work and is
+						// thus more memorable.
+						if ((currentTime - olderTime) < 0.5 * (newerTime - currentTime)) {
+							indexToDiscard = i + 1;
+						}
+					}
+					localStorage.removeItem(versionToKey(versions[indexToDiscard]));
+					break;
+				}
+				minSpan *= spanMult;
+			}
+				
+			// If there are too many songs, discard the least important ones.
+			// Songs that are older, or have less work, are less important.
+			while (songs.length > maximumSongCount) {
+				let leastImportantSong = null;
+				let leastImportance = Number.POSITIVE_INFINITY;
+				for (let i = Math.round(maximumSongCount / 2); i < songs.length; i++) {
+					const song = songs[i];
+					const timePassed = newTime - song.versions[0].time;
+					// Convert the time into a factor of 12 hours, add one, then divide by the result.
+					// This creates a curve that starts at 1, and then gradually drops off.
+					const timeScale = 1.0 / ((timePassed / (12 * 60 * 60 * 1000)) + 1.0);
+					// Add 5 minutes of work, to balance out simple songs a little bit.
+					const adjustedWork = song.versions[0].work + 5 * 60 * 1000;
+					const weight = adjustedWork * timeScale;
+					if (leastImportance > weight) {
+						leastImportance = weight;
+						leastImportantSong = song;
+					}
+				}
+				for (const version of leastImportantSong.versions) {
+					localStorage.removeItem(versionToKey(version));
+				}
+				songs.splice(songs.indexOf(leastImportantSong), 1);
+			}
+		}, 750); // Wait 3/4 of a second before saving a version.
+	}
+}

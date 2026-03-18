@@ -3,7 +3,7 @@
 
   // ── Config ─────────────────────────────────────────────────────────────────
   // ── Config ─────────────────────────────────────────────────────────────────
-  const isLocal = window.location.hostname === "localhost" || window.location.protocol === "file:" || !!window.electronAPI;
+  const isLocal = window.location.hostname === "localhost" || window.location.protocol === "file:";
   
   // Use a public server if available (e.g. your hosted backend), otherwise fallback to localhost for devs.
   // Replace this URL with your real production server URL (e.g. https://bonebox-party.onrender.com)

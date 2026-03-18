@@ -4,6 +4,7 @@ import { EnvelopeType, InstrumentType, Config } from "../synth/SynthConfig.js";
 import { isMobile, EditorConfig } from "./EditorConfig.js";
 import { ColorConfig } from "./ColorConfig.js";
 import "./style.js"; // Import for the side effects, there's no exports.
+import "../website/party.js";
 import { SongEditor } from "./SongEditor.js";
 import { Note, Pattern, Instrument, Channel, Song, Synth } from "../synth/synth.js";
 import { SongDocument } from "./SongDocument.js";

@@ -2980,8 +2980,8 @@ export class SongEditor {
             return;
         }
 
-        // Defer to actively editing volume/pan rows
-        if (document.activeElement == this._panSliderInputBox || document.activeElement == this._pwmSliderInputBox || document.activeElement == this._detuneSliderInputBox || document.activeElement == this._instrumentVolumeSliderInputBox) {
+        // Defer to actively editing volume/pan rows and collaboration inputs
+        if (document.activeElement == this._panSliderInputBox || document.activeElement == this._pwmSliderInputBox || document.activeElement == this._detuneSliderInputBox || document.activeElement == this._instrumentVolumeSliderInputBox || document.activeElement == this._joinCodeInput || document.activeElement == this._inviteLinkInput || document.activeElement == this._roomCodeInput) {
             // Enter/esc returns focus to form
             if (event.keyCode == 13 || event.keyCode == 27) {
                 this.mainLayer.focus();

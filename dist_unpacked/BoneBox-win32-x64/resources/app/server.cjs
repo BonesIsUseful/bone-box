@@ -173,6 +173,6 @@ app.get("/health", (_req, res) => {
 // ── Start ──────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
-    console.log(`BoneBox Party Server  →  http://localhost:${PORT}`);
-    console.log(`Health check          →  http://localhost:${PORT}/health`);
+    console.log(`BoneBox Party Server running on port ${PORT}`);
+    console.log(`Health check is at /health`);
 });

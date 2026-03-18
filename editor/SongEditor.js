@@ -771,10 +771,10 @@ export class SongEditor {
         };
 
         this._roomCodeRow = div({ class: "selectRow", style: "display: none; margin: 5px 0; align-items: center;" },
-            span({ class: "tip", style: "font-size: 11px; flex-shrink: 0; width: 60px;" }, "Room: "),
+            span({ class: "tip", style: "font-size: 10px; flex-shrink: 0; width: 40px;" }, "Room: "),
             div({ class: "selectContainer", style: "display: flex; gap: 5px; align-items: center; flex-grow: 1;" },
                 this._roomCodeInput = input({ type: "text", readonly: true, style: "flex-grow: 1; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: " + ColorConfig.primaryText + "; font-family: monospace; font-size: 14px; padding: 4px; text-align: center;" }),
-                button({ title: "Copy Code", style: "padding: 4px 8px; cursor: pointer; border-radius: 12px;", onclick: () => {
+                button({ title: "Copy Code", style: "padding: 4px 6px; cursor: pointer; border-radius: 8px;", onclick: () => {
                     navigator.clipboard.writeText(this._roomCodeInput.value);
                     alert("Room code copied!");
                 } }, "📋")
@@ -782,10 +782,10 @@ export class SongEditor {
         );
 
         this._inviteLinkRow = div({ class: "selectRow", style: "display: none; margin: 5px 0; align-items: center;" },
-            span({ class: "tip", style: "font-size: 11px; flex-shrink: 0; width: 60px;" }, "Link: "),
+            span({ class: "tip", style: "font-size: 10px; flex-shrink: 0; width: 40px;" }, "Link: "),
             div({ class: "selectContainer", style: "display: flex; gap: 4px; align-items: center; flex-grow: 1;" },
                 this._inviteLinkInput = input({ type: "text", readonly: true, style: "flex-grow: 1; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: " + ColorConfig.primaryText + "; font-size: 8px; padding: 4px;" }),
-                button({ title: "Copy Link", style: "padding: 4px 8px; cursor: pointer; border-radius: 4px;", onclick: () => {
+                button({ title: "Copy Link", style: "padding: 4px 6px; cursor: pointer; border-radius: 4px;", onclick: () => {
                     navigator.clipboard.writeText(this._inviteLinkInput.value);
                     alert("Invite link copied!");
                 } }, "📋")
@@ -793,7 +793,7 @@ export class SongEditor {
         );
 
         this._joinRoomRow = div({ class: "selectRow", style: "margin: 8px 0; align-items: center;" },
-            span({ class: "tip", style: "font-size: 11px; flex-shrink: 0; width: 60px;" }, "Join: "),
+            span({ class: "tip", style: "font-size: 10px; flex-shrink: 0; width: 40px;" }, "Join: "),
              div({ class: "selectContainer", style: "display: flex; gap: 5px; align-items: center; flex-grow: 1;" },
                 this._joinCodeInput = input({ type: "text", placeholder: "CODE", maxlength: "6", style: "width: 70px; text-transform: uppercase; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: " + ColorConfig.primaryText + "; padding: 4px; font-family: monospace;" }),
                 button({ style: "padding: 4px 10px; cursor: pointer; border-radius: 12px;", onclick: () => {

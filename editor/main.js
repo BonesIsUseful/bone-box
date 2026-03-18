@@ -125,5 +125,22 @@ if ("serviceWorker" in navigator) {
 		navigator.serviceWorker.register("/service_worker.js", {updateViaCache: "all", scope: "/"}).catch(() => {});
 }
 
+// Version check periodically
+async function checkUpdates() {
+	try {
+		const response = await fetch("package.json?v=" + Date.now());
+		const data = await response.json();
+		if (data.version && data.version !== EditorConfig.version) {
+			if (window.boneboxParty && window.boneboxParty.showToast) {
+				window.boneboxParty.showToast("🚀 A new update (v" + data.version + ") is available! Click here to restart and apply.", "update", 30000);
+			}
+		}
+	} catch (e) {
+		// Silently continue if offline
+	}
+}
+setTimeout(checkUpdates, 5000); // Check 5s after bootup
+setInterval(checkUpdates, 1000 * 60 * 30); // Check every 30 minutes
+
 // When compiling synth.ts as a standalone module named "beepbox", expose these classes as members to JavaScript:
 export { EnvelopeType, InstrumentType, Config, Note, Pattern, Instrument, Channel, Song, Synth, ColorConfig, EditorConfig, SongDocument, SongEditor, ExportPrompt, ChangePreset } ;

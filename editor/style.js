@@ -258,6 +258,9 @@ body {
     background: rgba(50, 255, 50, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
+    max-height: 35vh;
+    overflow-y: auto;
+    overflow-x: hidden;
     margin: 4px;
     padding: 4px;
 }
@@ -301,6 +304,9 @@ body {
 
 .beepboxEditor .track-area {
 	grid-area: track-area;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
 .beepboxEditor .loopEditor {

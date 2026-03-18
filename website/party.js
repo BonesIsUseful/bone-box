@@ -109,9 +109,23 @@
     const el = document.createElement("div");
     el.className = `bb-toast ${type}`;
     el.textContent = msg;
+    
+    // If it's an update, make it clickable and prominent
+    if (type === "update") {
+      el.style.cursor = "pointer";
+      el.style.border = "2px solid #4ecdc4";
+      el.style.background = "#1e1e3a";
+      el.title = "Click to update now";
+      el.addEventListener("click", () => {
+        if (confirm("Would you like to restart BoneBox to finish the update?")) {
+          window.location.reload(true);
+        }
+      });
+    }
+
     container.appendChild(el);
-    setTimeout(() => { el.style.opacity = "0"; el.style.transition = "opacity 0.3s"; }, duration);
-    setTimeout(() => el.remove(), duration + 320);
+    setTimeout(() => { if(el.parentNode) { el.style.opacity = "0"; el.style.transition = "opacity 0.3s"; } }, duration);
+    setTimeout(() => { if(el.parentNode) el.remove(); }, duration + 320);
   }
 
   function triggerUpdate() {
@@ -272,7 +286,8 @@
       myColor,
       connected: !!(socket && socket.connected)
     }),
-    onUpdate: (cb) => { onUpdateCallback = cb; }
+    onUpdate: (cb) => { onUpdateCallback = cb; },
+    showToast: (msg, type, duration) => showToast(msg, type, duration)
   };
 
   // ── Bootstrap ──────────────────────────────────────────────────────────────

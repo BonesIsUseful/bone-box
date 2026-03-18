@@ -25,6 +25,17 @@ export class TabManager {
 
         // Setup the new project callback immediately so it's available if a prompt is restored from history
         this.doc.newProjectCallback = (settings) => this._handleNewProject(settings);
+
+        // On startup, if there is no hash in the URL, load the hash from the last active tab
+        if (!window.location.hash || window.location.hash === "#") {
+            const activeTab = this.tabs.find(t => t.id === this.activeTabId);
+            if (activeTab && activeTab.hash) {
+                // Wait for document to be ready
+                setTimeout(() => {
+                    this.switchTab(activeTab.id);
+                }, 0);
+            }
+        }
     }
 
     _loadTabs() {

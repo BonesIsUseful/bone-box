@@ -1,81 +1,81 @@
 {
-	"name": "bone-box",
-	"version": "0.2.15",
-	"description": "BoneBox is an online tool for sketching and sharing instrumental music.",
-	"author": "BonesIsUseful",
-	"license": "MIT",
-	"homepage": "https://github.com/BonesIsUseful/bone-box",
-	"type": "module",
-	"main": "electron_main.cjs",
-	"scripts": {
-		"dev": "vite --port 3000",
-		"build": "vite build",
-		"preview": "vite preview",
-		"server": "node server.cjs",
-		"party": "concurrently -n \"frontend,party\" -c \"cyan,magenta\" \"npm run dev\" \"npm run server\"",
-		"electron": "electron .",
-		"electron-dev": "electron .",
-		"clean": "powershell -Command \"Stop-Process -Name BoneBox, electron -ErrorAction SilentlyContinue; Remove-Item -Recurse -Force dist, dist_vite -ErrorAction SilentlyContinue; exit 0\"",
-		"dist": "npm run clean && npm run build && electron-builder --win",
-		"package": "npm run clean && npm run build && npx electron-packager . \"BoneBox\" --platform=win32 --arch=x64 --out=\"dist_unpacked\" --overwrite --icon=\"website/favicon.ico\"",
-		"release": "node release.js"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/BonesIsUseful/bone-box.git"
-	},
-	"devDependencies": {
-		"@rollup/plugin-node-resolve": "^9.0.0",
-		"electron": "^30.0.0",
-		"electron-builder": "^26.8.1",
-		"electron-installer-windows": "^3.0.0",
-		"electron-packager": "^17.1.2",
-		"rollup": "^2.32.1",
-		"rollup-plugin-sourcemaps": "^0.6.3",
-		"terser": "^5.3.8",
-		"typescript": "^4.9.5",
-		"vite": "^8.0.0",
-		"wait-on": "^9.0.4"
-	},
-	"dependencies": {
-		"@types/select2": "^4.0.53",
-		"concurrently": "^9.2.1",
-		"electron-log": "^5.1.1",
-		"electron-updater": "^6.1.7",
-		"express": "^5.2.1",
-		"imperative-html": "^0.1.0",
-		"select2": "^4.0.13",
-		"socket.io": "^4.8.3"
-	},
-	"build": {
-		"appId": "com.bonesisuseful.bonebox",
-		"productName": "BoneBox",
-		"directories": {
-			"output": "dist"
-		},
-		"icon": "website/icon_256.png",
-		"files": [
-			"index.html",
-			"editor/",
-			"synth/",
-			"website/",
-			"electron_main.cjs",
-			"preload.cjs",
-			"package.json"
-		],
-		"publish": [
-			{
-				"provider": "github",
-				"owner": "BonesIsUseful",
-				"repo": "bone-box"
-			}
-		],
-		"win": {
-			"target": "portable"
-		},
-		"nsis": {
-			"oneClick": true,
-			"perMachine": true
-		}
-	}
+  "name": "bone-box",
+  "version": "0.2.17",
+  "description": "BoneBox is an online tool for sketching and sharing instrumental music.",
+  "author": "BonesIsUseful",
+  "license": "MIT",
+  "homepage": "https://github.com/BonesIsUseful/bone-box",
+  "type": "module",
+  "main": "electron_main.cjs",
+  "scripts": {
+    "dev": "vite --port 3000",
+    "build": "vite build",
+    "preview": "vite preview",
+    "server": "node server.cjs",
+    "party": "concurrently -n \"frontend,party\" -c \"cyan,magenta\" \"npm run dev\" \"npm run server\"",
+    "electron": "electron .",
+    "electron-dev": "electron .",
+    "clean": "powershell -Command \"Stop-Process -Name BoneBox, electron -ErrorAction SilentlyContinue; Remove-Item -Recurse -Force dist, dist_vite, dist_final -ErrorAction SilentlyContinue; exit 0\"",
+    "dist": "npm run clean && npm run build && electron-builder --win",
+    "package": "npm run clean && npm run build && npx electron-packager . \"BoneBox\" --platform=win32 --arch=x64 --out=\"dist_unpacked\" --overwrite --icon=\"website/favicon.ico\"",
+    "release": "node release.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BonesIsUseful/bone-box.git"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^9.0.0",
+    "electron": "^30.0.0",
+    "electron-builder": "^26.8.1",
+    "electron-installer-windows": "^3.0.0",
+    "electron-packager": "^17.1.2",
+    "rollup": "^2.32.1",
+    "rollup-plugin-sourcemaps": "^0.6.3",
+    "terser": "^5.3.8",
+    "typescript": "^4.9.5",
+    "vite": "^8.0.0",
+    "wait-on": "^9.0.4"
+  },
+  "dependencies": {
+    "@types/select2": "^4.0.53",
+    "concurrently": "^9.2.1",
+    "electron-log": "^5.1.1",
+    "electron-updater": "^6.1.7",
+    "express": "^5.2.1",
+    "imperative-html": "^0.1.0",
+    "select2": "^4.0.13",
+    "socket.io": "^4.8.3"
+  },
+  "build": {
+    "appId": "com.bonesisuseful.bonebox",
+    "productName": "BoneBox",
+    "directories": {
+      "output": "dist_final"
+    },
+    "icon": "website/icon_256.png",
+    "files": [
+      "index.html",
+      "editor/",
+      "synth/",
+      "website/",
+      "electron_main.cjs",
+      "preload.cjs",
+      "package.json"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "BonesIsUseful",
+        "repo": "bone-box"
+      }
+    ],
+    "win": {
+      "target": "portable"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": true
+    }
+  }
 }

@@ -1,0 +1,25 @@
+directories:
+  output: dist_final
+  buildResources: build
+appId: com.bonesisuseful.bonebox
+productName: BoneBox
+icon: website/icon_256.png
+files:
+  - filter:
+      - index.html
+      - editor/
+      - synth/
+      - website/
+      - electron_main.cjs
+      - preload.cjs
+      - package.json
+publish:
+  - provider: github
+    owner: BonesIsUseful
+    repo: bone-box
+win:
+  target: portable
+nsis:
+  oneClick: true
+  perMachine: true
+electronVersion: 30.5.1

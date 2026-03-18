@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join BoneBox Room</title>
+    
+    <!-- Discord/OpenGraph Embed Metadata -->
+    <meta property="og:title" content="BoneBox Collaboration Invite">
+    <meta property="og:description" content="You've been invited to join a real-time music collaboration session in BoneBox!">
+    <meta property="og:image" content="https://raw.githubusercontent.com/BonesIsUseful/bone-box/main/website/BoneBox_logo_32.png">
+    <meta property="og:url" content="https://github.com/BonesIsUseful/bone-box">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#7c4dff">
+
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background: rgba(148, 100, 255, 0.1);
+            border: 1px solid rgba(148, 100, 255, 0.2);
+            padding: 3rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 500px;
+        }
+        h1 { margin-bottom: 2rem; color: #9c64f7; }
+        .btn {
+            background: linear-gradient(135deg, #7c4dff, #9c64f7);
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: scale(1.05); }
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #9c64f7;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="loader"></div>
+        <h1>Attempting to open BoneBox...</h1>
+        <p>If the app doesn't open automatically, you might need to install it.</p>
+        <a href="https://github.com/BonesIsUseful/bone-box" class="btn">Download BoneBox</a>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomCode = urlParams.get('party');
+
+        if (roomCode) {
+            // Attempt to open the deep link
+            const deepLink = "bonebox://join/" + roomCode;
+            window.location.href = deepLink;
+
+            // Redirect to GitHub if it doesn't open within 4 seconds
+            setTimeout(() => {
+                if (document.hasFocus()) {
+                    window.location.href = "https://github.com/BonesIsUseful/bone-box";
+                }
+            }, 4000);
+        } else {
+            window.location.href = "https://github.com/BonesIsUseful/bone-box";
+        }
+    </script>
+</body>
+</html>

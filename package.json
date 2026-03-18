@@ -8,18 +8,14 @@
 	"type": "module",
 	"main": "electron_main.cjs",
 	"scripts": {
-		"build": "npm run build-win",
-		"build-synth": "bash ./compile_beepbox_synth.sh",
-		"build-player": "bash ./compile_beepbox_player.sh",
-		"build-editor": "bash ./compile_beepbox_editor.sh",
-		"build-win": "powershell -ExecutionPolicy Bypass -File ./build.ps1",
-		"serve": "npx http-server website -p 3000 --cors -c-1 -o",
+		"dev": "vite --port 3000",
+		"build": "vite build",
+		"preview": "vite preview",
 		"server": "node server.cjs",
-		"dev": "concurrently -n \"frontend,party\" -c \"cyan,magenta\" \"npm run serve\" \"npm run server\"",
+		"party": "concurrently -n \"frontend,party\" -c \"cyan,magenta\" \"npm run dev\" \"npm run server\"",
 		"electron": "electron .",
-		"electron-dev": "concurrently -n \"party,electron\" -c \"magenta,cyan\" \"npm run server\" \"electron .\"",
+		"electron-dev": "concurrently -n \"party,electron\" -c \"magenta,cyan\" \"npm run party\" \"wait-on -t 10000 http://localhost:3000 && electron .\"",
 		"dist": "npm run build && electron-builder --win",
-		"package": "npx electron-packager . BoneBox --platform=win32 --arch=x64 --out=electron-build --overwrite --asar --ignore=\"(pixel-art-helper|dist|\\\\.build_cache|electron-build)\"",
 		"release": "node release.js"
 	},
 	"repository": {
@@ -35,7 +31,9 @@
 		"rollup": "^2.32.1",
 		"rollup-plugin-sourcemaps": "^0.6.3",
 		"terser": "^5.3.8",
-		"typescript": "^4.9.5"
+		"typescript": "^4.9.5",
+		"vite": "^8.0.0",
+		"wait-on": "^9.0.4"
 	},
 	"dependencies": {
 		"@types/select2": "^4.0.53",
@@ -53,8 +51,12 @@
 		"directories": {
 			"output": "dist"
 		},
+		"icon": "website/icon_maskable_192.png",
 		"files": [
-			"website/**/*",
+			"index.html",
+			"editor/",
+			"synth/",
+			"website/",
 			"electron_main.cjs",
 			"preload.cjs",
 			"package.json"

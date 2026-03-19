@@ -76,7 +76,7 @@ def main():
                     
                     # Create GitHub Release if build was generated
                     if args.dist:
-                        release_cmd = f'gh release create v{new_v} dist_final/*.exe --title "v{new_v} - {args.message}" --notes "{args.message}"'
+                        release_cmd = f'gh release create v{new_v} dist_final/*.exe --title "v{new_v}" --notes "{args.message}"'
                         if run_command(release_cmd, "Creating GitHub Release"):
                             print(f"\n🎁 Standalone build attached to GitHub Release v{new_v}!")
                         else:

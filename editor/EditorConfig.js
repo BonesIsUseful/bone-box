@@ -22,8 +22,25 @@ export function prettyNumber(value) {
     return value.toFixed(2).replace(/\.?0*$/, "");
 }
 
+export const chordStamps = [
+    { name: "None", intervals: [] },
+    { name: "Major", intervals: [4, 7] },
+    { name: "Minor", intervals: [3, 7] },
+    { name: "5th (Power)", intervals: [7] },
+    { name: "Octave", intervals: [12] },
+    { name: "Major 7th", intervals: [4, 7, 11] },
+    { name: "Minor 7th", intervals: [3, 7, 10] },
+    { name: "Dominant 7th", intervals: [4, 7, 10] },
+    { name: "Suspended 2", intervals: [2, 7] },
+    { name: "Suspended 4", intervals: [5, 7] },
+    { name: "Augmented", intervals: [4, 8] },
+    { name: "Diminished", intervals: [3, 6] },
+    { name: "Major 9th", intervals: [4, 7, 11, 14] },
+    { name: "Minor 9th", intervals: [3, 7, 10, 14] },
+];
+
 export class EditorConfig {
-     static  __initStatic() {this.version = new URLSearchParams(window.location.search).get("v") || "0.2.18"}
+     static  __initStatic() {this.version = new URLSearchParams(window.location.search).get("v") || "0.2.19"}
      static  __initStatic2() {this.versionDisplayName = "BoneBox - " + EditorConfig.version}
 
      static  __initStatic3() {this.releaseNotesURL = "https://jummbus.bitbucket.io/patch_notes/" + EditorConfig.version + ".html"}

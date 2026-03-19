@@ -4,9 +4,10 @@ import { HTML } from "imperative-html/dist/esm/elements-strict";
 import { ColorConfig } from "./ColorConfig.js";
 
 export class Layout {
-	 static  __initStatic() {this._layoutMap = {
-		"small": "",
-		"long": `\
+	static __initStatic() {
+		this._layoutMap = {
+			"small": "",
+			"long": `\
 
 			/* long layout */
 			@media (min-width: 711px) {
@@ -17,7 +18,7 @@ export class Layout {
 				.beepboxEditor {
 					width: 100%;
 					height: 100%;
-					grid-template-columns: minmax(0, 1fr) 390px; /* minmax(0, 1fr) min-content; Chrome 80 grid layout regression. https://bugs.chromium.org/p/chromium/issues/detail?id=1050307 */
+					grid-template-columns: minmax(0, 1fr) 420px; /* minmax(0, 1fr) min-content; Chrome 80 grid layout regression. https://bugs.chromium.org/p/chromium/issues/detail?id=1050307 */
 					grid-template-rows: minmax(481px, 1fr) minmax(0, min-content);
 					grid-template-areas: "pattern-area settings-area" "track-area track-area";
 				}
@@ -49,8 +50,8 @@ export class Layout {
 				}
 				
 				.beepboxEditor .settings-area {
-					width: 390px;
-					grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+					width: 420px;
+					grid-template-columns: 192px 192px;
 					grid-template-rows: auto auto auto minmax(0, 1fr);
 					grid-template-areas:
 						"instrument-settings-area version-area"
@@ -89,7 +90,7 @@ export class Layout {
 				}
 			}
 		`,
-		"tall": `\
+			"tall": `\
 			/* tall layout */
 			@media (min-width: 711px) {
 				#beepboxEditorContainer {
@@ -186,7 +187,7 @@ export class Layout {
 				}
 			}
 		`,
-		"wide": `\
+			"wide": `\
 			/* wide (JB) layout */
 			@media (min-width: 1001px) {
 				#beepboxEditorContainer {
@@ -196,7 +197,7 @@ export class Layout {
 				.beepboxEditor {
 					width: 100%;
 					height: 100%;
-					grid-template-columns: 512px minmax(0, 1fr) 30em;
+					grid-template-columns: 512px minmax(0, 1fr) 420px;
 					grid-template-rows: minmax(481px, 1fr) min-content;
 					grid-template-areas: "track-area pattern-area settings-area";
 				}
@@ -234,8 +235,8 @@ export class Layout {
 				}
 				
 				.beepboxEditor .settings-area {
-					width: 30em;
-					grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+					width: 420px;
+					grid-template-columns: 192px 192px;
 					grid-template-rows: auto auto auto minmax(0, 1fr);
 					grid-template-areas:
 						"instrument-settings-area version-area"
@@ -267,11 +268,12 @@ export class Layout {
 				}
 			}
 		`,
-	}}
-		
-		 static  __initStatic2() {this._styleElement = document.head.appendChild(HTML.style({type: "text/css"}))}
-		
-	 static setLayout(layout) {
+		}
+	}
+
+	static __initStatic2() { this._styleElement = document.head.appendChild(HTML.style({ type: "text/css" })) }
+
+	static setLayout(layout) {
 		this._styleElement.textContent = this._layoutMap[layout];
 	}
 } Layout.__initStatic(); Layout.__initStatic2();

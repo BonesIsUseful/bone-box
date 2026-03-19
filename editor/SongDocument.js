@@ -83,10 +83,12 @@ export class SongDocument {
 				setDefaultInstruments(this.song);
 				this.song.scale = this.prefs.defaultScale;
 			}
+			songString = this.song.toBase64String();
 		} catch (error) {
 			errorAlert(error);
+			this.song = new Song("");
+			songString = this.song.toBase64String();
 		}
-		songString = this.song.toBase64String();
 		this.synth = new Synth(this.song);
 		this.synth.volume = this._calcVolume();
 		this.synth.anticipatePoorPerformance = isMobile;

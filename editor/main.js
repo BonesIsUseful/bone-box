@@ -16,6 +16,7 @@ const beepbox = { EnvelopeType, InstrumentType, Config, Note, Pattern, Instrumen
 window.beepbox = beepbox;
 
 const doc = new SongDocument();
+doc.prompt = null;
 const editor = new SongEditor(doc);
 const tabManager = new TabManager(doc);
 const beepboxEditorContainer = document.getElementById("beepboxEditorContainer");
@@ -27,12 +28,13 @@ editor.whenUpdated();
 
 // Fade-in transitions
 editor.mainLayer.className += " load";
-editor.mainLayer.getElementsByClassName("pattern-area")[0].className += " load";
-editor.mainLayer.getElementsByClassName("settings-area")[0].className += " load";
-editor.mainLayer.getElementsByClassName("editor-song-settings")[0].className += " load";
-editor.mainLayer.getElementsByClassName("instrument-settings-area")[0].className += " load";
-editor.mainLayer.getElementsByClassName("trackAndMuteContainer")[0].className += " load";
-editor.mainLayer.getElementsByClassName("barScrollBar")[0].className += " load";
+const classesToLoad = ["pattern-area", "settings-area", "song-settings-area", "instrument-settings-area", "trackAndMuteContainer", "barScrollBar"];
+for (const className of classesToLoad) {
+	const elements = editor.mainLayer.getElementsByClassName(className);
+	for (let i = 0; i < elements.length; i++) {
+		elements[i].classList.add("load");
+	}
+}
 
 // Give select2 class to these
 $('#pitchPresetSelect').select2({ dropdownAutoWidth: true });

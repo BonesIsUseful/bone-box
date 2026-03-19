@@ -38,7 +38,7 @@ body {
 /* Note: "#" symbols need to be encoded as "%23" in SVG data urls, otherwise they are interpreted as fragment identifiers! */
 :root {
 	--button-size: 26px;
-	--settings-area-width: 192px;
+	--settings-area-width: 280px;
 	--play-symbol: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="-13 -13 26 26"><path d="M -5 -8 L -5 8 L 8 0 z" fill="gray"/></svg>');
 	--pause-symbol: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="-13 -13 26 26"><rect x="-5" y="-7" width="4" height="14" fill="gray"/><rect x="3" y="-7" width="4" height="14" fill="gray"/></svg>');
 	--record-symbol: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="-13 -13 26 26"><circle cx="0" cy="0" r="6" fill="gray"/></svg>');
@@ -167,7 +167,7 @@ body {
 .beepboxEditor {
 	display: grid;
     grid-template-columns: minmax(0, 1fr) max-content;
-    grid-template-rows: max-content 1fr; /* max-content minmax(0, 1fr); Chrome 80 grid layout regression. https://bugs.chromium.org/p/chromium/issues/detail?id=1050307 */
+    grid-template-rows: 1fr auto;
     grid-template-areas: "pattern-area settings-area" "track-area settings-area";
 	grid-column-gap: 6px;
 	grid-row-gap: 6px;
@@ -222,29 +222,19 @@ body {
     transition-delay: 0.15s;
 }
 
-.instrument-settings-area {
-    opacity: 0;
-    -webkit-transition: opacity 0.5s ease-in;
-    -moz-transition: opacity 0.5s ease-in;
-    -o-transition: opacity 0.5s ease-in;
-    -ms-transition: opacity 0.5s ease-in;
-    transition: opacity 0.5s ease-in;
-    transition-delay: 0.45s;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 12px;
-    margin-top: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+
+#instrumentSettingsText {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 11px;
+    margin-bottom: 8px;
+    opacity: 0.7;
 }
 
-.editor-song-settings {
-    background: rgba(100, 100, 255, 0.04);
-    border-radius: 12px;
-    padding: 12px;
-    margin-bottom: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+.selectRow .tip, .selectRow span {
+    padding-left: 2px;
 }
 
 .trackAndMuteContainer {
@@ -302,11 +292,27 @@ body {
 	position: relative;
 }
 
+.pattern-editor-side-overlay {
+	background-color: black;
+	opacity: 0.4;
+	pointer-events: none;
+	z-index: 10;
+}
+
+.pattern-editor-bar-separator {
+	width: 1px;
+	height: 100%;
+	background-color: white;
+	opacity: 0.3;
+	flex-shrink: 0;
+}
+
 .beepboxEditor .track-area {
 	grid-area: track-area;
     display: flex;
     flex-direction: column;
-    min-height: 0;
+    min-height: 160px;
+    z-index: 2;
 }
 
 .beepboxEditor .loopEditor {
@@ -318,19 +324,64 @@ body {
 }
 
 .beepboxEditor .settings-area {
-	grid-area: settings-area;
-	display: grid;
-    grid-template-columns: auto;
-    grid-template-rows: min-content min-content min-content min-content min-content;
-    grid-template-areas: "version-area" "play-pause-area" "menu-area" "song-settings-area" "instrument-settings-area";
-	grid-column-gap: 6px;
+    grid-area: settings-area;
+    display: grid;
+    grid-template-columns: var(--settings-area-width) 192px;
+    grid-auto-rows: min-content;
+    column-gap: 12px;
+    row-gap: 12px;
+    padding: 0px;
+    width: auto;
+    box-sizing: border-box;
+    align-items: start;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    max-height: 100vh;
+}
+/* Total width: 12 + 192 + 12 + 192 + 12 = 420px */
+
+.beepboxEditor .song-settings-area,
+.beepboxEditor .settings-card {
+    background: rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+    padding: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
 }
 
-.beepboxEditor .version-area{ grid-area: version-area; }
-.beepboxEditor .play-pause-area{ grid-area: play-pause-area; }
-.beepboxEditor .menu-area{ grid-area: menu-area; }
-.beepboxEditor .song-settings-area{ grid-area: song-settings-area; }
-.beepboxEditor .instrument-settings-area{ grid-area: instrument-settings-area; }
+.beepboxEditor .instrument-settings-area {
+    background: rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+    padding: 0 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+    grid-column: 1 !important;
+    grid-row: 1 / span 20 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    align-self: stretch !important;
+    min-height: 680px !important;
+}
+
+.beepboxEditor .song-settings-area {
+    grid-column: 2 !important;
+}
+
+.beepboxEditor .settings-card {
+    grid-column: 2 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
 .beepboxEditor .tip {
 	cursor: help;
@@ -1398,17 +1449,39 @@ body {
 }
 
 .beepboxEditor .selectRow, .beepboxEditor .instrumentCopyPasteRow {
-	margin: 2px 0;
+	margin: 1px 0;
 	height: var(--button-size);
 	display: flex;
+	padding: 0 4px; /* RECOVER PADDING HERE */
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
+	overflow: hidden;
+}
+
+.beepboxEditor .selectRow > :first-child {
+	flex-shrink: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	margin-right: 8px; /* More gap */
+}
+
+/* For multi-input rows (like Pan), children should all be flex-friendly */
+.beepboxEditor .selectRow > :first-child > div,
+.beepboxEditor .selectRow > :first-child > span {
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .beepboxEditor .selectRow > :last-child {
-	width: 62.5%;
-	flex-shrink: 0;
+	flex-grow: 1;
+	min-width: 0;
+	text-align: right;
+}
+
+.beepboxEditor .selectRow .selectContainer {
+    width: auto !important; /* Force override of inline 52.5% etc */
 }
 
 .beepboxEditor .menu-area {
@@ -1645,15 +1718,13 @@ li.select2-results__option[role=group] > strong:hover {
 		grid-row-gap: 0;
 	}
 	.beepboxEditor .settings-area {
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-		grid-template-rows: min-content min-content 1fr min-content;
-		grid-template-areas:
-			"play-pause-area play-pause-area"
-			"menu-area instrument-settings-area"
-			"song-settings-area instrument-settings-area"
-			"version-area version-area";
-		grid-column-gap: 8px;
-		margin: 0 4px;
+		display: flex !important;
+		flex-direction: column !important;
+		gap: 12px !important;
+		width: 100% !important;
+		margin: 0 !important;
+		padding: 8px !important;
+		box-sizing: border-box !important;
 	}
 	.beepboxEditor:focus-within {
 		outline: none;

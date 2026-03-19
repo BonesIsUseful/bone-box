@@ -143,6 +143,16 @@ export class SongPerformance {
 	
 	 __init18() {this._onAnimationFrame = () => {
 		window.requestAnimationFrame(this._onAnimationFrame);
+		if (this._doc.prefs.followPlayhead && this._doc.synth.playing && !this._doc.synth.recording) {
+			const pos = this._doc.synth.playhead;
+			const N = this._doc.song.barCount;
+			const targetBar = Math.floor(Math.max(0, Math.min(N - 1, pos)));
+			if (targetBar != this._doc.bar) {
+				this._doc.selection.setChannelBar(this._doc.channel, targetBar);
+				this._doc.selection.scrollToSelectedPattern();
+				this._doc.notifier.notifyWatchers();
+			}
+		}
 		if (this._doc.synth.recording) {
 			let dirty = this._updateRecordedNotes();
 			dirty = this._updateRecordedBassNotes() ? true : dirty;

@@ -8,6 +8,7 @@ import { ColorConfig } from "./ColorConfig.js";
 
 import { HTML, SVG } from "imperative-html/dist/esm/elements-strict";
 import { ChangeSequence } from "./Change.js";
+import { chordStamps } from "./EditorConfig.js";
 import { ChangeVolume, ChangeTempo, ChangePan, ChangeReverb, ChangeDistortion, ChangeOperatorAmplitude, ChangeFeedbackAmplitude, ChangePulseWidth, ChangeDetune, ChangeVibratoDepth, ChangeVibratoSpeed, ChangeVibratoDelay, ChangePanDelay, ChangeChorus, ChangeEQFilterSimplePeak, ChangeNoteFilterSimplePeak, ChangeStringSustain, ChangeEnvelopeSpeed, ChangeSupersawDynamism, ChangeSupersawShape, ChangeSupersawSpread, ChangePitchShift, ChangeChannelBar, ChangeDragSelectedNotes, ChangeEnsurePatternExists, ChangeNoteTruncate, ChangeNoteAdded, ChangePatternSelection, ChangePinTime, ChangeSizeBend, ChangePitchBend, ChangePitchAdded, ChangeArpeggioSpeed, ChangeBitcrusherQuantization, ChangeBitcrusherFreq, ChangeEchoSustain, ChangeEQFilterSimpleCut, ChangeNoteFilterSimpleCut, ChangeFilterMovePoint, ChangeDuplicateSelectedReusedPatterns, ChangeHoldingModRecording } from "./changes.js";
 import { prettyNumber } from "./EditorConfig.js";
 
@@ -158,7 +159,6 @@ export class PatternEditor {
             this.modDragValueLabel.addEventListener("input", this._validateModDragLabelInput);
         } else {
             this._svgPlayhead.style.display = "none";
-            this._svg.appendChild(SVG.rect({ x: 0, y: 0, width: 10000, height: 10000, fill: ColorConfig.editorBackground, style: "opacity: 0.5;" }));
         }
 
         this.resetCopiedPins();
@@ -625,7 +625,7 @@ export class PatternEditor {
         if (this._doc.synth.playing && ((this._pattern != null && this._doc.song.getPattern(this._doc.channel, Math.floor(this._doc.synth.playhead)) == this._pattern) || Math.floor(this._doc.synth.playhead) == this._doc.bar + this._barOffset)) {
             this._svgPlayhead.setAttribute("visibility", "visible");
             const modPlayhead = this._doc.synth.playhead - playheadBar;
-            if (Math.abs(modPlayhead - this._playheadX) > 0.1) {
+            if (this._doc.prefs.followPlayhead || Math.abs(modPlayhead - this._playheadX) > 0.1) {
                 this._playheadX = modPlayhead;
             } else {
                 this._playheadX += (modPlayhead - this._playheadX) * 0.2;
@@ -1642,6 +1642,20 @@ export class PatternEditor {
                 // confusing.
 
                 const note = new Note(this._cursor.pitch, this._cursor.start, this._cursor.end, Config.noteSizeMax, this._doc.song.getChannelIsNoise(this._doc.channel));
+                
+                // Add chord pitches if stamp is selected
+                if (!this._doc.song.getChannelIsNoise(this._doc.channel) && !this._doc.song.getChannelIsMod(this._doc.channel)) {
+                    const chord = chordStamps[this._doc.prefs.chordStamp];
+                    if (chord && chord.intervals.length > 0) {
+                        for (const interval of chord.intervals) {
+                            const p = this._cursor.pitch + interval;
+                            if (p <= Config.maxPitch) {
+                                note.pitches.push(p);
+                            }
+                        }
+                    }
+                }
+
                 note.pins = [];
                 for (const oldPin of this._cursor.pins) {
                     note.pins.push(makeNotePin(0, oldPin.time, oldPin.size));
@@ -1654,7 +1668,7 @@ export class PatternEditor {
                 if (this._doc.prefs.enableNotePreview && !this._doc.synth.playing) {
                     // Play the new note out loud if enabled.
                     const duration = Math.min(Config.partsPerBeat, this._cursor.end - this._cursor.start);
-                    this._doc.performance.setTemporaryPitches([this._cursor.pitch], duration);
+                    this._doc.performance.setTemporaryPitches(note.pitches, duration);
                 }
             }
             this._updateSelection();
@@ -1880,6 +1894,20 @@ export class PatternEditor {
                         const theNote = new Note(this._cursor.pitch, start, end,
                             this._doc.song.getNewNoteVolume(this._doc.song.getChannelIsMod(this._doc.channel), this._doc.channel, this._doc.getCurrentInstrument(this._barOffset), this._cursor.pitch),
                             this._doc.song.getChannelIsNoise(this._doc.channel));
+                        
+                        // Add chord pitches if stamp is selected
+                        if (!this._doc.song.getChannelIsNoise(this._doc.channel) && !this._doc.song.getChannelIsMod(this._doc.channel)) {
+                            const chord = chordStamps[this._doc.prefs.chordStamp];
+                            if (chord && chord.intervals.length > 0) {
+                                for (const interval of chord.intervals) {
+                                    const p = this._cursor.pitch + interval;
+                                    if (p <= Config.maxPitch) {
+                                        theNote.pitches.push(p);
+                                    }
+                                }
+                            }
+                        }
+
                         theNote.continuesLastPattern = continuesLastPattern;
                         sequence.append(new ChangeNoteAdded(this._doc, pattern, theNote, i));
                         this._copyPins(theNote);
@@ -2066,9 +2094,19 @@ export class PatternEditor {
                     minPitch -= this._cursor.curNote.pitches[this._cursor.pitchIndex];
                     maxPitch -= this._cursor.curNote.pitches[this._cursor.pitchIndex];
 
+                    const chord = chordStamps[this._doc.prefs.chordStamp];
+                    const isChordStampActive = chord && chord.intervals.length > 0;
+
                     if (!this._doc.song.getChannelIsMod(this._doc.channel)) {
                         const bendTo = this._snapToPitch(this._findMousePitch(this._mouseY), -minPitch, this._getMaxPitch() - maxPitch);
-                        sequence.append(new ChangePitchBend(this._doc, this._cursor.curNote, bendStart, bendEnd, bendTo, this._cursor.pitchIndex));
+                        if (isChordStampActive) {
+                            const offset = bendTo - this._cursor.curNote.pitches[this._cursor.pitchIndex];
+                            for (let i = 0; i < this._cursor.curNote.pitches.length; i++) {
+                                sequence.append(new ChangePitchBend(this._doc, this._cursor.curNote, bendStart, bendEnd, this._cursor.curNote.pitches[i] + offset, i));
+                            }
+                        } else {
+                            sequence.append(new ChangePitchBend(this._doc, this._cursor.curNote, bendStart, bendEnd, bendTo, this._cursor.pitchIndex));
+                        }
                         this._dragPitch = bendTo;
                     }
                     else {
@@ -2130,8 +2168,31 @@ export class PatternEditor {
                         this._doc.performance.setTemporaryPitches(this._cursor.curNote.pitches, duration);
                     }
                 } else {
+                    const chord = chordStamps[this._doc.prefs.chordStamp];
+                    const isChordStampActive = chord && chord.intervals.length > 0;
+
                     if (this._cursor.curNote.pitches.length == 1) {
                         sequence.append(new ChangeNoteAdded(this._doc, this._pattern, this._cursor.curNote, this._cursor.curIndex, true));
+                    } else if (isChordStampActive) {
+                        // Attempt to remove corresponding nodes in the stamp
+                        const root = this._cursor.pitch;
+                        const targets = [root];
+                        for (const interval of chord.intervals) {
+                            targets.push(root + interval);
+                        }
+                        
+                        let remainingPitches = this._cursor.curNote.pitches.filter(p => targets.indexOf(p) == -1);
+                        
+                        if (remainingPitches.length == 0) {
+                            sequence.append(new ChangeNoteAdded(this._doc, this._pattern, this._cursor.curNote, this._cursor.curIndex, true));
+                        } else {
+                            // This is tricky because we want to remove multiple pitches.
+                            // BeepBox doesn't have a ChangePitchesRemoved, so we'll just replace the whole note.
+                            const newNode = this._cursor.curNote.clone();
+                            newNode.pitches = remainingPitches;
+                            sequence.append(new ChangeNoteAdded(this._doc, this._pattern, this._cursor.curNote, this._cursor.curIndex, true));
+                            sequence.append(new ChangeNoteAdded(this._doc, this._pattern, newNode, this._cursor.curIndex));
+                        }
                     } else {
                         sequence.append(new ChangePitchAdded(this._doc, this._cursor.curNote, this._cursor.pitch, this._cursor.curNote.pitches.indexOf(this._cursor.pitch), true));
                     }
@@ -2466,14 +2527,31 @@ export class PatternEditor {
                             const oscillatorLabel = SVG.text();
                             oscillatorLabel.setAttribute("x", "" + prettyNumber(this._partWidth * note.start + indicatorOffset));
                             oscillatorLabel.setAttribute("y", "" + prettyNumber(this._pitchToPixelHeight(pitch - this._octaveOffset)));
-                            oscillatorLabel.setAttribute("width", "30");
                             oscillatorLabel.setAttribute("fill", ColorConfig.invertedText);
                             oscillatorLabel.setAttribute("text-anchor", "start");
                             oscillatorLabel.setAttribute("dominant-baseline", "central");
                             oscillatorLabel.setAttribute("pointer-events", "none");
                             oscillatorLabel.textContent = "" + (i + 1);
                             this._svgNoteContainer.appendChild(oscillatorLabel);
+                            indicatorOffset += 12;
                         }
+                    }
+
+                    if (this._pitchHeight >= 18 && !this._doc.song.getChannelIsNoise(this._doc.channel) && !this._doc.song.getChannelIsMod(this._doc.channel)) {
+                        const noteLabel = SVG.text();
+                        noteLabel.setAttribute("x", "" + prettyNumber(this._partWidth * note.start + indicatorOffset));
+                        noteLabel.setAttribute("y", "" + prettyNumber(this._pitchToPixelHeight(pitch - this._octaveOffset)));
+                        noteLabel.setAttribute("fill", ColorConfig.invertedText);
+                        noteLabel.setAttribute("opacity", "0.6");
+                        noteLabel.setAttribute("text-anchor", "start");
+                        noteLabel.setAttribute("dominant-baseline", "central");
+                        noteLabel.setAttribute("pointer-events", "none");
+                        noteLabel.style.fontSize = "11px";
+                        noteLabel.style.fontWeight = "bold";
+
+                        const pitchNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+                        noteLabel.textContent = pitchNames[pitch % 12] + Math.floor(pitch / 12);
+                        this._svgNoteContainer.appendChild(noteLabel);
                     }
                 }
 

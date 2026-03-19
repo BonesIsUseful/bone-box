@@ -30,10 +30,11 @@ export class Preferences {
 	
 	
 	
+	 __init3() {this.chordStamp = 0}
 	
 	
 	
-	constructor() {;Preferences.prototype.__init.call(this);Preferences.prototype.__init2.call(this);
+	constructor() {;Preferences.prototype.__init.call(this);Preferences.prototype.__init2.call(this);Preferences.prototype.__init3.call(this);
 		this.reload();
 	}
 	
@@ -62,7 +63,9 @@ export class Preferences {
 		this.bassOffset = (+(window.localStorage.getItem("bassOffset"))) || 0;
 		this.layout = window.localStorage.getItem("layout") || "long";
 		this.colorTheme = window.localStorage.getItem("colorTheme") || "bonebox classic";
+		this.followPlayhead = window.localStorage.getItem("followPlayhead") == "true";
 		this.visibleOctaves = ((window.localStorage.getItem("visibleOctaves")) >>> 0) || Preferences.defaultVisibleOctaves;
+		this.chordStamp = ((window.localStorage.getItem("chordStamp")) >>> 0) || 0;
 		
 		const defaultScale = Config.scales.dictionary[window.localStorage.getItem("defaultScale")];
 		this.defaultScale = (defaultScale != undefined) ? defaultScale.index : 0;
@@ -104,6 +107,8 @@ export class Preferences {
 		window.localStorage.setItem("layout", this.layout);
 		window.localStorage.setItem("colorTheme", this.colorTheme);
 		window.localStorage.setItem("volume", String(this.volume));
+		window.localStorage.setItem("followPlayhead", this.followPlayhead ? "true" : "false");
 		window.localStorage.setItem("visibleOctaves", String(this.visibleOctaves));
+		window.localStorage.setItem("chordStamp", String(this.chordStamp));
 	}
 } Preferences.__initStatic();

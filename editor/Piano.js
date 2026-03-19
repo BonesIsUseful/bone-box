@@ -116,7 +116,9 @@ export class Piano {
 	}
 		
 	 _updateCursorPitch() {
-		const scale = Config.scales[this._doc.song.scale].flags;
+		const scaleItem = Config.scales[this._doc.song.scale];
+		if (!scaleItem) return;
+		const scale = scaleItem.flags;
 			const mousePitch = Math.max(0, Math.min(this._pitchCount-1, this._pitchCount - (this._mouseY / this._pitchHeight)));
 		if (scale[Math.floor(mousePitch) % Config.pitchesPerOctave] || this._doc.song.getChannelIsNoise(this._doc.channel)) {
 			this._cursorPitch = Math.floor(mousePitch);

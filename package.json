@@ -1,6 +1,6 @@
 {
   "name": "bone-box",
-  "version": "0.2.18",
+  "version": "0.2.19",
   "description": "BoneBox is an online tool for sketching and sharing instrumental music.",
   "author": "BonesIsUseful",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "server": "node server.cjs",
     "party": "concurrently -n \"frontend,party\" -c \"cyan,magenta\" \"npm run dev\" \"npm run server\"",
     "electron": "electron .",
-    "electron-dev": "electron .",
+    "electron-dev": "concurrently -n \"vite,electron\" -c \"cyan,magenta\" \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
     "clean": "powershell -Command \"Stop-Process -Name BoneBox, electron -ErrorAction SilentlyContinue; Remove-Item -Recurse -Force dist, dist_vite, dist_final -ErrorAction SilentlyContinue; exit 0\"",
     "dist": "npm run clean && npm run build && electron-builder --win",
     "package": "npm run clean && npm run build && npx electron-packager . \"BoneBox\" --platform=win32 --arch=x64 --out=\"dist_unpacked\" --overwrite --icon=\"website/favicon.ico\"",

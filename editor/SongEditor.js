@@ -4506,7 +4506,8 @@ export class SongEditor {
             this._memberList.innerHTML = "";
             if (state.members && state.members.length > 0) {
                 state.members.forEach(member => {
-                    const isMe = member.name === state.myName;
+                    // Use socketId for accurate identification instead of name
+                    const isMe = member.socketId === state.mySocketId;
                     const memberDiv = div({ 
                         style: "display: flex; align-items: center; gap: 6px; padding: 4px 6px; background: " + 
                                (isMe ? "color-mix(in srgb, " + ColorConfig.linkAccent + " 20%, transparent)" : "rgba(255,255,255,0.03)") + 

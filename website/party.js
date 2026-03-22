@@ -10,7 +10,7 @@
   const PRODUCTION_SERVER = "https://bonebox-collab.onrender.com"; 
   const PARTY_SERVER = PRODUCTION_SERVER || "http://localhost:3001";
   
-  const DEBOUNCE_MS = 400; // ms to wait before broadcasting a song change
+  const DEBOUNCE_MS = 5000; // 5 seconds to wait before broadcasting a song change
 
   // ── State ──────────────────────────────────────────────────────────────────
   let socket = null;
@@ -18,11 +18,14 @@
   let roomCode = null;
   let myName = localStorage.getItem("party-name") || "Anonymous";
   let myColor = "#4ecdc4";
+  let mySocketId = null;
   let members = [];
   let isApplyingRemote = false;
   let broadcastTimer = null;
   let lastSentHash = "";
+  let lastHashBeforeRemote = "";
   let onUpdateCallback = null;
+  let ignoreNextHashChange = false;
 
   // ── Wait for Socket.io client to load, then boot ───────────────────────────
   function waitForSocketIO(cb) {
@@ -144,8 +147,12 @@
   function applyRemoteHash(hash) {
     if (hash && hash !== getCurrentHash()) {
       isApplyingRemote = true;
+      lastHashBeforeRemote = getCurrentHash();
       location.hash = hash;
-      setTimeout(() => { isApplyingRemote = false; }, 200);
+      // Longer timeout to ensure the hash change is fully processed
+      setTimeout(() => { 
+        isApplyingRemote = false; 
+      }, 500);
     }
   }
 
@@ -154,11 +161,34 @@
     clearTimeout(broadcastTimer);
     broadcastTimer = setTimeout(() => {
       const hash = getCurrentHash();
-      if (hash !== lastSentHash) {
+      if (hash !== lastSentHash && !isApplyingRemote) {
+        console.log("[BoneBox Party] Broadcasting song update");
         lastSentHash = hash;
         socket.emit("song-update", { hash });
       }
     }, DEBOUNCE_MS);
+  }
+  
+  // Check if hash change is likely client-side only (navigation, playback, view changes)
+  function isClientSideOnlyChange(oldHash, newHash) {
+    if (!oldHash || !newHash) return false;
+    
+    // Remove the # prefix
+    const oldData = oldHash.replace(/^#/, '');
+    const newData = newHash.replace(/^#/, '');
+    
+    // If either is empty, it's a significant change
+    if (!oldData || !newData) return false;
+    
+    // These patterns indicate client-side only changes that shouldn't trigger sync
+    // BeepBox/JummBox uses specific parameter prefixes for these
+    // Examples: playback position, view state, scroll position
+    
+    // For now, we'll use a simple heuristic: if the hash changed but it's within
+    // a very short time (less than debounce), it's likely rapid edits or navigation
+    // The debounce timer will handle this, but we can add more sophisticated checks here
+    
+    return false; // Let debounce handle filtering for now
   }
 
   // ── Connect to server ──────────────────────────────────────────────────────
@@ -167,6 +197,7 @@
 
     socket.on("connect", () => {
       console.log("[BoneBox Party] Connected to party server");
+      mySocketId = socket.id;
       triggerUpdate();
     });
 
@@ -176,6 +207,7 @@
         inParty = false;
         members = [];
         roomCode = null;
+        mySocketId = null;
         triggerUpdate();
       }
     });
@@ -193,7 +225,18 @@
     });
 
     socket.on("song-updated", (data) => {
-      if (isApplyingRemote) return;
+      // Ignore updates from ourselves
+      if (data.socketId && data.socketId === mySocketId) {
+        console.log("[BoneBox Party] Ignoring our own update");
+        return;
+      }
+      
+      if (isApplyingRemote) {
+        console.log("[BoneBox Party] Already applying remote update, skipping");
+        return;
+      }
+      
+      console.log("[BoneBox Party] Applying remote song update");
       applyRemoteHash(data.hash);
       triggerUpdate();
     });
@@ -262,20 +305,31 @@
   }
 
   // ── Event Watchers ─────────────────────────────────────────────────────────
+  let lastLocalHash = getCurrentHash();
+  
   window.addEventListener("hashchange", () => {
-    if (!isApplyingRemote) {
-      scheduleBroadcast();
+    const currentHash = getCurrentHash();
+    
+    // Don't broadcast if we're applying a remote update
+    if (isApplyingRemote) {
+      console.log("[BoneBox Party] Hash changed due to remote update, not broadcasting");
+      lastLocalHash = currentHash;
+      return;
     }
+    
+    // Don't broadcast if this is the same as what we just sent
+    if (currentHash === lastSentHash) {
+      console.log("[BoneBox Party] Hash matches last sent, not broadcasting");
+      lastLocalHash = currentHash;
+      return;
+    }
+    
+    console.log("[BoneBox Party] Local hash change detected, scheduling broadcast");
+    lastLocalHash = currentHash;
+    scheduleBroadcast();
   });
 
-  setInterval(() => {
-    if (inParty && !isApplyingRemote) {
-      const hash = getCurrentHash();
-      if (hash !== lastSentHash) {
-        scheduleBroadcast();
-      }
-    }
-  }, 500);
+  // Removed the aggressive setInterval polling - debounced hashchange is sufficient
 
   // ── Public API ─────────────────────────────────────────────────────────────
   window.boneboxParty = {
@@ -288,6 +342,7 @@
       members,
       myName,
       myColor,
+      mySocketId,
       connected: !!(socket && socket.connected)
     }),
     onUpdate: (cb) => { onUpdateCallback = cb; },

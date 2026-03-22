@@ -40,7 +40,7 @@ export const chordStamps = [
 ];
 
 export class EditorConfig {
-     static  __initStatic() {this.version = new URLSearchParams(window.location.search).get("v") || "0.2.19"}
+     static  __initStatic() {this.version = new URLSearchParams(window.location.search).get("v") || "0.2.20"}
      static  __initStatic2() {this.versionDisplayName = "BoneBox - " + EditorConfig.version}
 
      static  __initStatic3() {this.releaseNotesURL = "https://jummbus.bitbucket.io/patch_notes/" + EditorConfig.version + ".html"}

@@ -72,19 +72,26 @@
                 letter-spacing: 0.2px;
             }
             .bb-toast.info {
-                background: #1e1e3a;
-                border: 1px solid rgba(148, 100, 255, 0.4);
-                color: #d0d0f0;
+                background: color-mix(in srgb, var(--ui-widget-background, #444) 90%, transparent);
+                border: 1px solid color-mix(in srgb, var(--link-accent, #98f) 40%, transparent);
+                color: var(--primary-text, #fff);
             }
             .bb-toast.success {
-                background: #0d2b1e;
-                border: 1px solid rgba(78, 205, 196, 0.4);
-                color: #4ecdc4;
+                background: color-mix(in srgb, var(--ui-widget-background, #444) 90%, transparent);
+                border: 1px solid color-mix(in srgb, var(--pitch1-secondary-channel, #4ecdc4) 40%, transparent);
+                color: var(--pitch1-secondary-channel, #4ecdc4);
             }
             .bb-toast.error {
-                background: #2b0d0d;
+                background: color-mix(in srgb, var(--ui-widget-background, #444) 90%, transparent);
                 border: 1px solid rgba(255, 107, 107, 0.4);
                 color: #ff6b6b;
+            }
+            .bb-toast.update {
+                background: color-mix(in srgb, var(--ui-widget-background, #444) 90%, transparent);
+                border: 2px solid var(--pitch1-secondary-channel, #4ecdc4);
+                color: var(--primary-text, #fff);
+                pointer-events: auto;
+                cursor: pointer;
             }
             @keyframes toast-in {
                 from { opacity: 0; transform: translateY(10px) scale(0.95); }
@@ -112,9 +119,6 @@
     
     // If it's an update, make it clickable and prominent
     if (type === "update") {
-      el.style.cursor = "pointer";
-      el.style.border = "2px solid #4ecdc4";
-      el.style.background = "#1e1e3a";
       el.title = "Click to update now";
       el.addEventListener("click", () => {
         if (confirm("Would you like to restart BoneBox to finish the update?")) {

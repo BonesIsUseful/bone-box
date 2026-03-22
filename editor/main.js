@@ -19,9 +19,17 @@ const doc = new SongDocument();
 doc.prompt = null;
 const editor = new SongEditor(doc);
 const tabManager = new TabManager(doc);
+window.tabManager = tabManager;
 const beepboxEditorContainer = document.getElementById("beepboxEditorContainer");
-
-document.body.insertBefore(tabManager.container, beepboxEditorContainer);
+const boneboxEditorColumn = document.createElement("div");
+boneboxEditorColumn.className = "bonebox-editor-column";
+const boneboxMainRow = document.createElement("div");
+boneboxMainRow.className = "bonebox-main-row";
+document.body.insertBefore(boneboxMainRow, beepboxEditorContainer);
+boneboxMainRow.appendChild(tabManager.container);
+boneboxEditorColumn.appendChild(tabManager.savedGroupsBar);
+boneboxEditorColumn.appendChild(beepboxEditorContainer);
+boneboxMainRow.appendChild(boneboxEditorColumn);
 beepboxEditorContainer.appendChild(editor.mainLayer);
 
 editor.whenUpdated();

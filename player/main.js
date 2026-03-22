@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2012-2022 John Nesky and contributing authors, distributed under the MIT license, see accompanying the LICENSE.md file.
+// Copyright (c) 2012-2022 John Nesky and contributing authors, distributed under the MIT license, see accompanying the LICENSE.md file.
 
 import { EnvelopeType, InstrumentType, Config } from "../synth/SynthConfig.js";
 import { ColorConfig } from "../editor/ColorConfig.js";
 import { Note, Pattern, Instrument, Channel, Synth } from "../synth/synth.js";
 import { HTML, SVG } from "imperative-html/dist/esm/elements-strict";
+import { bindRangeSliderFill } from "../editor/HTMLWrapper.js";
 
 	const {a, button, div, h1, input} = HTML;
 	const {svg, circle, rect, path} = SVG;
@@ -89,6 +90,7 @@ import { HTML, SVG } from "imperative-html/dist/esm/elements-strict";
 		cursor: pointer;
 		background-color: ${ColorConfig.editorBackground};
 		touch-action: pan-y;
+		--slider-fill-pct: 0%;
 	}
 	input[type=range]:focus {
 		outline: none;
@@ -97,7 +99,7 @@ import { HTML, SVG } from "imperative-html/dist/esm/elements-strict";
 		width: 100%;
 		height: 4px;
 		cursor: pointer;
-		background: ${ColorConfig.uiWidgetBackground};
+		background: linear-gradient(to right, color-mix(in srgb, ${ColorConfig.primaryText} 88%, black) 0%, color-mix(in srgb, ${ColorConfig.primaryText} 88%, black) var(--slider-fill-pct), ${ColorConfig.uiWidgetBackground} var(--slider-fill-pct), ${ColorConfig.uiWidgetBackground} 100%);
 	}
 	input[type=range]::-webkit-slider-thumb {
 		height: 16px;
@@ -109,16 +111,24 @@ import { HTML, SVG } from "imperative-html/dist/esm/elements-strict";
 		margin-top: -6px;
 	}
 	input[type=range]:focus::-webkit-slider-runnable-track, input[type=range]:hover::-webkit-slider-runnable-track {
-		background: ${ColorConfig.uiWidgetFocus};
+		background: linear-gradient(to right, color-mix(in srgb, ${ColorConfig.primaryText} 88%, black) 0%, color-mix(in srgb, ${ColorConfig.primaryText} 88%, black) var(--slider-fill-pct), ${ColorConfig.uiWidgetFocus} var(--slider-fill-pct), ${ColorConfig.uiWidgetFocus} 100%);
 	}
 	input[type=range]::-moz-range-track {
 		width: 100%;
 		height: 4px;
 		cursor: pointer;
+		border: none;
 		background: ${ColorConfig.uiWidgetBackground};
+	}
+	input[type=range]::-moz-range-progress {
+		height: 4px;
+		background: color-mix(in srgb, ${ColorConfig.primaryText} 88%, black);
 	}
 	input[type=range]:focus::-moz-range-track, input[type=range]:hover::-moz-range-track  {
 		background: ${ColorConfig.uiWidgetFocus};
+	}
+	input[type=range]:focus::-moz-range-progress, input[type=range]:hover::-moz-range-progress {
+		background: color-mix(in srgb, ${ColorConfig.primaryText} 88%, black);
 	}
 	input[type=range]::-moz-range-thumb {
 		height: 16px;
@@ -132,10 +142,20 @@ import { HTML, SVG } from "imperative-html/dist/esm/elements-strict";
 		width: 100%;
 		height: 4px;
 		cursor: pointer;
-		background: ${ColorConfig.uiWidgetBackground};
+		background: transparent;
 		border-color: transparent;
+		color: transparent;
 	}
-	input[type=range]:focus::-ms-track, input[type=range]:hover::-ms-track {
+	input[type=range]::-ms-fill-lower {
+		background: color-mix(in srgb, ${ColorConfig.primaryText} 88%, black);
+	}
+	input[type=range]::-ms-fill-upper {
+		background: ${ColorConfig.uiWidgetBackground};
+	}
+	input[type=range]:focus::-ms-fill-lower, input[type=range]:hover::-ms-fill-lower {
+		background: color-mix(in srgb, ${ColorConfig.primaryText} 88%, black);
+	}
+	input[type=range]:focus::-ms-fill-upper, input[type=range]:hover::-ms-fill-upper {
 		background: ${ColorConfig.uiWidgetFocus};
 	}
 	input[type=range]::-ms-thumb {
@@ -440,7 +460,8 @@ function setSynthVolume() {
 
 function renderPlayhead() {
 	if (synth.song != null) {
-		let pos = synth.playhead / synth.song.barCount;
+		let pos = synth.song.barCount > 0 ? synth.playhead / synth.song.barCount : 0;
+		pos = Math.max(0, Math.min(1, pos));
 		playhead.style.left = (timelineWidth * pos) + "px";
 			
 		const boundingRect = visualizationContainer.getBoundingClientRect();
@@ -631,6 +652,7 @@ function onShareClicked() {
 if (getLocalStorage("volume") != null) {
 	volumeSlider.value = getLocalStorage("volume");
 }
+bindRangeSliderFill(volumeSlider);
 setSynthVolume();
 
 window.addEventListener("resize", onWindowResize);

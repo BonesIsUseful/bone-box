@@ -33,6 +33,33 @@ body {
 	width: 100%;
 	display: flex;
 	flex-direction: column;
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+
+.bonebox-editor-column {
+	flex: 1;
+	min-width: 0;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+}
+
+.bonebox-main-row {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+body.tab-position-left .bonebox-main-row,
+body.tab-position-right .bonebox-main-row {
+	flex-direction: row;
+	min-width: 0;
 }
 
 /* Note: "#" symbols need to be encoded as "%23" in SVG data urls, otherwise they are interpreted as fragment identifiers! */
@@ -169,8 +196,8 @@ body {
     grid-template-columns: minmax(0, 1fr) max-content;
     grid-template-rows: 1fr auto;
     grid-template-areas: "pattern-area settings-area" "track-area settings-area";
-	grid-column-gap: 6px;
-	grid-row-gap: 6px;
+	grid-column-gap: 0;
+	grid-row-gap: 0;
 	position: relative;
 	touch-action: manipulation;
 	cursor: default;
@@ -292,6 +319,13 @@ body {
 	position: relative;
 }
 
+.beepboxEditor .octave-scroll-bar-container {
+	box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.04);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 10px;
+}
+
 .pattern-editor-side-overlay {
 	background-color: black;
 	opacity: 0.4;
@@ -300,7 +334,7 @@ body {
 }
 
 .pattern-editor-bar-separator {
-	width: 1px;
+	width: 3px;
 	height: 100%;
 	background-color: white;
 	opacity: 0.3;
@@ -330,10 +364,11 @@ body {
     grid-auto-rows: min-content;
     column-gap: 12px;
     row-gap: 12px;
-    padding: 0px;
+    padding: 12px 14px;
     width: auto;
     box-sizing: border-box;
     align-items: start;
+    justify-items: stretch;
     overflow-x: hidden !important;
     overflow-y: auto !important;
     max-height: 100vh;
@@ -346,10 +381,11 @@ body {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 16px !important;
-    padding: 16px !important;
+    padding: 14px 16px !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
     box-sizing: border-box !important;
     width: 100% !important;
+    min-width: 0 !important;
     overflow-x: hidden !important;
 }
 
@@ -374,13 +410,24 @@ body {
 
 .beepboxEditor .song-settings-area {
     grid-column: 2 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.beepboxEditor .settings-area > .song-settings-area:nth-child(2) > div:first-child {
+    box-sizing: border-box;
+    padding-left: 40px;
+    padding-right: 40px;
 }
 
 .beepboxEditor .settings-card {
     grid-column: 2 !important;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+    min-width: 0;
 }
 
 .beepboxEditor .tip {
@@ -1496,15 +1543,13 @@ body {
 	white-space: nowrap;
 }
 
-.beepboxEditor .song-settings-area {
-	display: flex;
-	flex-direction: column;
-}
-
 .beepboxEditor .editor-controls {
 	flex-shrink: 0;
 	display: flex;
 	flex-direction: column;
+	gap: 2px;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .beepboxEditor .instrument-settings-area {
@@ -1564,6 +1609,7 @@ body {
 
 .beepboxEditor input[type=range] {
 	-webkit-appearance: none;
+	appearance: none;
 	color: inherit;
 	width: 100%;
 	height: var(--button-size);
@@ -1573,6 +1619,7 @@ body {
 	background: none;
 	touch-action: pan-y;
   position: relative;
+	--slider-fill-pct: 0%;
 }
 .beepboxEditor input[type=range]:focus {
 	outline: none;
@@ -1581,7 +1628,7 @@ body {
 	width: 100%;
 	height: 6px;
 	cursor: pointer;
-	background: ${ColorConfig.uiWidgetBackground};
+	background: linear-gradient(to right, color-mix(in srgb, currentColor 88%, black) 0%, color-mix(in srgb, currentColor 88%, black) var(--slider-fill-pct), ${ColorConfig.uiWidgetBackground} var(--slider-fill-pct), ${ColorConfig.uiWidgetBackground} 100%);
 }
 
 .modTarget:hover {
@@ -1630,16 +1677,24 @@ body {
 	margin-top: -10px;
 }
 .beepboxEditor input[type=range]:focus::-webkit-slider-runnable-track {
-	background: ${ColorConfig.uiWidgetFocus};
+	background: linear-gradient(to right, color-mix(in srgb, currentColor 88%, black) 0%, color-mix(in srgb, currentColor 88%, black) var(--slider-fill-pct), ${ColorConfig.uiWidgetFocus} var(--slider-fill-pct), ${ColorConfig.uiWidgetFocus} 100%);
 }
 .beepboxEditor input[type=range]::-moz-range-track {
 	width: 100%;
 	height: 6px;
 	cursor: pointer;
+	border: none;
 	background: ${ColorConfig.uiWidgetBackground};
+}
+.beepboxEditor input[type=range]::-moz-range-progress {
+	height: 6px;
+	background: color-mix(in srgb, currentColor 88%, black);
 }
 .beepboxEditor input[type=range]:focus::-moz-range-track {
 	background: ${ColorConfig.uiWidgetFocus};
+}
+.beepboxEditor input[type=range]:focus::-moz-range-progress {
+	background: color-mix(in srgb, currentColor 88%, black);
 }
 .beepboxEditor input[type=range]::-moz-range-thumb {
 	height: var(--button-size);
@@ -1653,10 +1708,20 @@ body {
 	width: 100%;
 	height: 6px;
 	cursor: pointer;
-	background: ${ColorConfig.uiWidgetBackground};
+	background: transparent;
 	border-color: transparent;
+	color: transparent;
 }
-.beepboxEditor input[type=range]:focus::-ms-track {
+.beepboxEditor input[type=range]::-ms-fill-lower {
+	background: color-mix(in srgb, currentColor 88%, black);
+}
+.beepboxEditor input[type=range]::-ms-fill-upper {
+	background: ${ColorConfig.uiWidgetBackground};
+}
+.beepboxEditor input[type=range]:focus::-ms-fill-lower {
+	background: color-mix(in srgb, currentColor 88%, black);
+}
+.beepboxEditor input[type=range]:focus::-ms-fill-upper {
 	background: ${ColorConfig.uiWidgetFocus};
 }
 .beepboxEditor input[type=range]::-ms-thumb {
@@ -1723,7 +1788,7 @@ li.select2-results__option[role=group] > strong:hover {
 		gap: 12px !important;
 		width: 100% !important;
 		margin: 0 !important;
-		padding: 8px !important;
+		padding: 12px 14px !important;
 		box-sizing: border-box !important;
 	}
 	.beepboxEditor:focus-within {

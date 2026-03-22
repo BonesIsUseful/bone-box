@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2022 John Nesky and contributing authors, distributed under the MIT license, see accompanying the LICENSE.md file.
+// Copyright (c) 2012-2022 John Nesky and contributing authors, distributed under the MIT license, see accompanying the LICENSE.md file.
 
 import { FilterType, SustainType, EnvelopeType, InstrumentType, EffectType, EnvelopeComputeIndex, Config, getDrumWave, drawNoiseSpectrum, getArpeggioPitchIndex, performIntegralOld, getPulseWidthRatio, effectsIncludeTransition, effectsIncludeChord, effectsIncludePitchShift, effectsIncludeDetune, effectsIncludeVibrato, effectsIncludeNoteFilter, effectsIncludeDistortion, effectsIncludeBitcrusher, effectsIncludePanning, effectsIncludeChorus, effectsIncludeEcho, effectsIncludeReverb } from "./SynthConfig.js";
 import { EditorConfig } from "../editor/EditorConfig.js";
@@ -7793,6 +7793,7 @@ export class Synth {
 
         if (playSong && !this.countInMetronome) {
             this.playheadInternal = (((this.tick + 1.0 - this.tickSampleCountdown / samplesPerTick) / 2.0 + this.part) / Config.partsPerBeat + this.beat) / song.beatsPerBar + this.bar;
+            this.playheadInternal = Math.max(0, Math.min(song.barCount, this.playheadInternal));
         }
 
         /*

@@ -44,7 +44,8 @@ export class PatternEditor {
      __init20() {this._svgNoteContainer = SVG.svg()}
       __init21() {this._svgPlayhead = SVG.rect({ x: "0", y: "0", width: "4", fill: ColorConfig.playhead, "pointer-events": "none" })}
       __init22() {this._selectionRect = SVG.rect({ class: "dashed-line dash-move", fill: ColorConfig.boxSelectionFill, stroke: ColorConfig.hoverPreview, "stroke-width": 2, "stroke-dasharray": "5, 3", "fill-opacity": "0.4", "pointer-events": "none", visibility: "hidden" })}
-      __init23() {this._svgPreview = SVG.path({ fill: "none", stroke: ColorConfig.hoverPreview, "stroke-width": "2", "pointer-events": "none" })}
+      __init23() {this._svgChordStampPreview = SVG.path({ fill: "none", stroke: ColorConfig.secondaryText, "stroke-width": "2", "pointer-events": "none", opacity: "0.75", visibility: "hidden" })}
+      __init23b() {this._svgPreview = SVG.path({ fill: "none", stroke: ColorConfig.hoverPreview, "stroke-width": "2", "pointer-events": "none" })}
      __init24() {this.modDragValueLabel = HTML.div({ width: "90", "text-anchor": "start", contenteditable: "true", style: "display: flex, justify-content: center; align-items:center; position:absolute; pointer-events: none;", "dominant-baseline": "central", })}
       __init25() {this._svg = SVG.svg({ style: `background-color: ${ColorConfig.editorBackground}; touch-action: none; position: absolute;`, width: "100%", height: "100%" },
         SVG.defs(
@@ -55,6 +56,7 @@ export class PatternEditor {
         this._svgBackground,
         this._selectionRect,
         this._svgNoteContainer,
+        this._svgChordStampPreview,
         this._svgPreview,
         this._svgPlayhead,
     )}
@@ -123,9 +125,9 @@ export class PatternEditor {
      __init75() {this._renderedPitchChannelCount = -1}
      __init76() {this._renderedNoiseChannelCount = -1}
      __init77() {this._renderedModChannelCount = -1}
-     __init78() {this._followPlayheadBar = -1}
+     __init78() {this._followPlayheadBar = -1; this._lastPlaybackRedrawPart = -1; this._lastPlaybackRedrawBar = -1}
 
-    constructor( _doc,  _interactive,  _barOffset) {;this._doc = _doc;this._interactive = _interactive;this._barOffset = _barOffset;PatternEditor.prototype.__init14.call(this);PatternEditor.prototype.__init15.call(this);PatternEditor.prototype.__init16.call(this);PatternEditor.prototype.__init17.call(this);PatternEditor.prototype.__init18.call(this);PatternEditor.prototype.__init19.call(this);PatternEditor.prototype.__init20.call(this);PatternEditor.prototype.__init21.call(this);PatternEditor.prototype.__init22.call(this);PatternEditor.prototype.__init23.call(this);PatternEditor.prototype.__init24.call(this);PatternEditor.prototype.__init25.call(this);PatternEditor.prototype.__init26.call(this);PatternEditor.prototype.__init27.call(this);PatternEditor.prototype.__init28.call(this);PatternEditor.prototype.__init29.call(this);PatternEditor.prototype.__init30.call(this);PatternEditor.prototype.__init31.call(this);PatternEditor.prototype.__init32.call(this);PatternEditor.prototype.__init33.call(this);PatternEditor.prototype.__init34.call(this);PatternEditor.prototype.__init35.call(this);PatternEditor.prototype.__init36.call(this);PatternEditor.prototype.__init37.call(this);PatternEditor.prototype.__init38.call(this);PatternEditor.prototype.__init39.call(this);PatternEditor.prototype.__init40.call(this);PatternEditor.prototype.__init41.call(this);PatternEditor.prototype.__init42.call(this);PatternEditor.prototype.__init43.call(this);PatternEditor.prototype.__init44.call(this);PatternEditor.prototype.__init45.call(this);PatternEditor.prototype.__init46.call(this);PatternEditor.prototype.__init47.call(this);PatternEditor.prototype.__init48.call(this);PatternEditor.prototype.__init49.call(this);PatternEditor.prototype.__init50.call(this);PatternEditor.prototype.__init51.call(this);PatternEditor.prototype.__init52.call(this);PatternEditor.prototype.__init53.call(this);PatternEditor.prototype.__init54.call(this);PatternEditor.prototype.__init55.call(this);PatternEditor.prototype.__init56.call(this);PatternEditor.prototype.__init57.call(this);PatternEditor.prototype.__init58.call(this);PatternEditor.prototype.__init59.call(this);PatternEditor.prototype.__init60.call(this);PatternEditor.prototype.__init61.call(this);PatternEditor.prototype.__init62.call(this);PatternEditor.prototype.__init63.call(this);PatternEditor.prototype.__init64.call(this);PatternEditor.prototype.__init65.call(this);PatternEditor.prototype.__init66.call(this);PatternEditor.prototype.__init67.call(this);PatternEditor.prototype.__init68.call(this);PatternEditor.prototype.__init69.call(this);PatternEditor.prototype.__init70.call(this);PatternEditor.prototype.__init71.call(this);PatternEditor.prototype.__init72.call(this);PatternEditor.prototype.__init73.call(this);PatternEditor.prototype.__init74.call(this);PatternEditor.prototype.__init75.call(this);PatternEditor.prototype.__init76.call(this);PatternEditor.prototype.__init77.call(this);PatternEditor.prototype.__init78.call(this);PatternEditor.prototype.__init79.call(this);PatternEditor.prototype.__init80.call(this);PatternEditor.prototype.__init81.call(this);PatternEditor.prototype.__init82.call(this);PatternEditor.prototype.__init83.call(this);PatternEditor.prototype.__init84.call(this);PatternEditor.prototype.__init85.call(this);PatternEditor.prototype.__init86.call(this);PatternEditor.prototype.__init87.call(this);PatternEditor.prototype.__init88.call(this);
+    constructor( _doc,  _interactive,  _barOffset) {;this._doc = _doc;this._interactive = _interactive;this._barOffset = _barOffset;PatternEditor.prototype.__init14.call(this);PatternEditor.prototype.__init15.call(this);PatternEditor.prototype.__init16.call(this);PatternEditor.prototype.__init17.call(this);PatternEditor.prototype.__init18.call(this);PatternEditor.prototype.__init19.call(this);PatternEditor.prototype.__init20.call(this);PatternEditor.prototype.__init21.call(this);PatternEditor.prototype.__init22.call(this);PatternEditor.prototype.__init23.call(this);PatternEditor.prototype.__init23b.call(this);PatternEditor.prototype.__init24.call(this);PatternEditor.prototype.__init25.call(this);PatternEditor.prototype.__init26.call(this);PatternEditor.prototype.__init27.call(this);PatternEditor.prototype.__init28.call(this);PatternEditor.prototype.__init29.call(this);PatternEditor.prototype.__init30.call(this);PatternEditor.prototype.__init31.call(this);PatternEditor.prototype.__init32.call(this);PatternEditor.prototype.__init33.call(this);PatternEditor.prototype.__init34.call(this);PatternEditor.prototype.__init35.call(this);PatternEditor.prototype.__init36.call(this);PatternEditor.prototype.__init37.call(this);PatternEditor.prototype.__init38.call(this);PatternEditor.prototype.__init39.call(this);PatternEditor.prototype.__init40.call(this);PatternEditor.prototype.__init41.call(this);PatternEditor.prototype.__init42.call(this);PatternEditor.prototype.__init43.call(this);PatternEditor.prototype.__init44.call(this);PatternEditor.prototype.__init45.call(this);PatternEditor.prototype.__init46.call(this);PatternEditor.prototype.__init47.call(this);PatternEditor.prototype.__init48.call(this);PatternEditor.prototype.__init49.call(this);PatternEditor.prototype.__init50.call(this);PatternEditor.prototype.__init51.call(this);PatternEditor.prototype.__init52.call(this);PatternEditor.prototype.__init53.call(this);PatternEditor.prototype.__init54.call(this);PatternEditor.prototype.__init55.call(this);PatternEditor.prototype.__init56.call(this);PatternEditor.prototype.__init57.call(this);PatternEditor.prototype.__init58.call(this);PatternEditor.prototype.__init59.call(this);PatternEditor.prototype.__init60.call(this);PatternEditor.prototype.__init61.call(this);PatternEditor.prototype.__init62.call(this);PatternEditor.prototype.__init63.call(this);PatternEditor.prototype.__init64.call(this);PatternEditor.prototype.__init65.call(this);PatternEditor.prototype.__init66.call(this);PatternEditor.prototype.__init67.call(this);PatternEditor.prototype.__init68.call(this);PatternEditor.prototype.__init69.call(this);PatternEditor.prototype.__init70.call(this);PatternEditor.prototype.__init71.call(this);PatternEditor.prototype.__init72.call(this);PatternEditor.prototype.__init73.call(this);PatternEditor.prototype.__init74.call(this);PatternEditor.prototype.__init75.call(this);PatternEditor.prototype.__init76.call(this);PatternEditor.prototype.__init77.call(this);PatternEditor.prototype.__init78.call(this);PatternEditor.prototype.__init79.call(this);PatternEditor.prototype.__init80.call(this);PatternEditor.prototype.__init81.call(this);PatternEditor.prototype.__init82.call(this);PatternEditor.prototype.__init83.call(this);PatternEditor.prototype.__init84.call(this);PatternEditor.prototype.__init85.call(this);PatternEditor.prototype.__init86.call(this);PatternEditor.prototype.__init87.call(this);PatternEditor.prototype.__init88.call(this);
         for (let i = 0; i < Config.pitchesPerOctave; i++) {
             const rectangle = SVG.rect();
             rectangle.setAttribute("x", "1");
@@ -623,14 +625,19 @@ export class PatternEditor {
         const playheadBar = Math.floor(this._doc.synth.playhead);
 
         if (this._doc.synth.playing && ((this._pattern != null && this._doc.song.getPattern(this._doc.channel, Math.floor(this._doc.synth.playhead)) == this._pattern) || Math.floor(this._doc.synth.playhead) == this._doc.bar + this._barOffset)) {
-            this._svgPlayhead.setAttribute("visibility", "visible");
             const modPlayhead = this._doc.synth.playhead - playheadBar;
-            if (this._doc.prefs.followPlayhead || Math.abs(modPlayhead - this._playheadX) > 0.1) {
-                this._playheadX = modPlayhead;
+            const useFollowPlayheadOverlay = this._interactive && this._doc.prefs.followPlayhead && this._doc.getFullScreen() && !this._doc.synth.recording && this._doc.synth.playing;
+            if (useFollowPlayheadOverlay) {
+                this._svgPlayhead.setAttribute("visibility", "hidden");
             } else {
-                this._playheadX += (modPlayhead - this._playheadX) * 0.2;
+                this._svgPlayhead.setAttribute("visibility", "visible");
+                if (this._doc.prefs.followPlayhead || Math.abs(modPlayhead - this._playheadX) > 0.1) {
+                    this._playheadX = modPlayhead;
+                } else {
+                    this._playheadX += (modPlayhead - this._playheadX) * 0.2;
+                }
+                this._svgPlayhead.setAttribute("x", "" + prettyNumber(this._playheadX * this._editorWidth - 2));
             }
-            this._svgPlayhead.setAttribute("x", "" + prettyNumber(this._playheadX * this._editorWidth - 2));
         } else {
             this._svgPlayhead.setAttribute("visibility", "hidden");
         }
@@ -642,6 +649,20 @@ export class PatternEditor {
             this._doc.notifier.notifyWatchers();
         }
         this._followPlayheadBar = playheadBar;
+
+        const PlaybackMatches = this._doc.synth.playing && this._patternPlaybackMatchesVisible();
+        if (PlaybackMatches) {
+            const PartF = Math.floor(this._doc.synth.getCurrentPart());
+            if (PartF !== this._lastPlaybackRedrawPart || playheadBar !== this._lastPlaybackRedrawBar) {
+                this._lastPlaybackRedrawPart = PartF;
+                this._lastPlaybackRedrawBar = playheadBar;
+                this._doc.currentPatternIsDirty = true;
+            }
+        } else if (this._lastPlaybackRedrawPart !== -1 || this._lastPlaybackRedrawBar !== -1) {
+            this._lastPlaybackRedrawPart = -1;
+            this._lastPlaybackRedrawBar = -1;
+            this._doc.currentPatternIsDirty = true;
+        }
 
         if (this._doc.currentPatternIsDirty) {
             this._redrawNotePatterns();
@@ -2223,6 +2244,7 @@ export class PatternEditor {
         if (this._usingTouch) {
             if (!this._mouseDown || !this._cursor.valid || !this._mouseDragging || !this._dragVisible || this._shiftHeld || this._draggingStartOfSelection || this._draggingEndOfSelection || this._draggingSelectionContents) {
                 this._svgPreview.setAttribute("visibility", "hidden");
+                this._svgChordStampPreview.setAttribute("visibility", "hidden");
 
                 if (!this.editingModLabel) {
                     this.modDragValueLabel.style.setProperty("display", "none");
@@ -2232,6 +2254,7 @@ export class PatternEditor {
 
             } else {
                 this._svgPreview.setAttribute("visibility", "visible");
+                this._svgChordStampPreview.setAttribute("visibility", "hidden");
 
                 const x = this._partWidth * this._dragTime;
                 const y = this._pitchToPixelHeight(this._dragPitch - this._octaveOffset);
@@ -2261,6 +2284,7 @@ export class PatternEditor {
         } else {
             if (!this._mouseOver || this._mouseDown || !this._cursor.valid) {
                 this._svgPreview.setAttribute("visibility", "hidden");
+                this._svgChordStampPreview.setAttribute("visibility", "hidden");
                 if (!this.editingModLabel) {
                     this.modDragValueLabel.style.setProperty("display", "none");
                     this.modDragValueLabel.style.setProperty("pointer-events", "none");
@@ -2268,6 +2292,7 @@ export class PatternEditor {
                 }
             } else {
                 this._svgPreview.setAttribute("visibility", "visible");
+                this._svgChordStampPreview.setAttribute("visibility", "hidden");
 
                 if (this._cursorAtStartOfSelection()) {
                     const center = this._partWidth * this._doc.selection.patternSelectionStart;
@@ -2287,7 +2312,24 @@ export class PatternEditor {
                     const bottom = this._pitchToPixelHeight(-0.5);
                     this._svgPreview.setAttribute("d", "M " + left + " 0 L " + left + " " + bottom + " L " + right + " " + bottom + " L " + right + " 0 z");
                 } else {
-                    this._drawNote(this._svgPreview, this._cursor.pitch, this._cursor.start, this._cursor.pins, (this._pitchHeight - this._pitchBorder) / 2 + 1, true, this._octaveOffset);
+                    const Radius = (this._pitchHeight - this._pitchBorder) / 2 + 1;
+                    const chord = chordStamps[this._doc.prefs.chordStamp];
+                    const chordStampChordPreview = chord && chord.intervals.length > 0
+                        && this._cursor.curNote == null
+                        && !this._doc.song.getChannelIsNoise(this._doc.channel)
+                        && !this._doc.song.getChannelIsMod(this._doc.channel);
+                    if (chordStampChordPreview) {
+                        let ChordPathD = "";
+                        for (const interval of chord.intervals) {
+                            const p = this._cursor.pitch + interval;
+                            if (p <= Config.maxPitch) {
+                                ChordPathD += this._drawNotePathD(p, this._cursor.start, this._cursor.pins, Radius, true, this._octaveOffset);
+                            }
+                        }
+                        this._svgChordStampPreview.setAttribute("d", ChordPathD);
+                        this._svgChordStampPreview.setAttribute("visibility", ChordPathD.length > 0 ? "visible" : "hidden");
+                    }
+                    this._drawNote(this._svgPreview, this._cursor.pitch, this._cursor.start, this._cursor.pins, Radius, true, this._octaveOffset);
                 }
             }
         }
@@ -2386,6 +2428,7 @@ export class PatternEditor {
         if (this._renderedBeatWidth != beatWidth || this._renderedPitchHeight != this._pitchHeight) {
             this._renderedBeatWidth = beatWidth;
             this._renderedPitchHeight = this._pitchHeight;
+            const RowInnerW = Math.max(0, beatWidth - 2);
             this._svgNoteBackground.setAttribute("width", "" + beatWidth);
             this._svgNoteBackground.setAttribute("height", "" + (this._pitchHeight * Config.pitchesPerOctave));
             this._svgDrumBackground.setAttribute("width", "" + beatWidth);
@@ -2393,10 +2436,10 @@ export class PatternEditor {
             this._svgModBackground.setAttribute("width", "" + beatWidth);
             this._svgModBackground.setAttribute("height", "" + (this._pitchHeight));
             this._svgModBackground.setAttribute("y", "" + (this._pitchBorder / 2));
-            this._backgroundDrumRow.setAttribute("width", "" + (beatWidth - 2));
+            this._backgroundDrumRow.setAttribute("width", "" + RowInnerW);
             this._backgroundDrumRow.setAttribute("height", "" + (this._pitchHeight - 2));
             if (this._pitchHeight > this._pitchBorder) {
-                this._backgroundModRow.setAttribute("width", "" + (beatWidth - 2));
+                this._backgroundModRow.setAttribute("width", "" + RowInnerW);
                 this._backgroundModRow.setAttribute("height", "" + (this._pitchHeight - this._pitchBorder));
             }
 
@@ -2405,7 +2448,7 @@ export class PatternEditor {
             for (let j = 0; j < Config.pitchesPerOctave; j++) {
                 const rectangle = this._backgroundPitchRows[j];
                 const y = (Config.pitchesPerOctave - j) % Config.pitchesPerOctave;
-                rectangle.setAttribute("width", "" + (beatWidth - 2));
+                rectangle.setAttribute("width", "" + RowInnerW);
                 rectangle.setAttribute("y", "" + (y * this._pitchHeight + 1));
                 rectangle.setAttribute("height", "" + (this._pitchHeight - 2));
             }
@@ -2447,6 +2490,16 @@ export class PatternEditor {
             }
         }
 
+        const Song = this._doc.song;
+        const PartialLoop = Song.loopStart !== 0 || Song.loopLength !== Song.barCount;
+        const BarIndex = this._doc.bar + this._barOffset;
+        const InLoop = PartialLoop && BarIndex >= Song.loopStart && BarIndex < Song.loopStart + Song.loopLength;
+        if (InLoop) {
+            this._svg.style.background = `${ColorConfig.loopRegionTintLayer()}, ${ColorConfig.editorBackground}`;
+        } else {
+            this._svg.style.background = ColorConfig.editorBackground;
+        }
+
         this._redrawNotePatterns();
     }
 
@@ -2481,6 +2534,8 @@ export class PatternEditor {
             const chord = instrument.getChord();
             const transition = instrument.getTransition();
             const displayNumberedChords = chord.customInterval || chord.arpeggiates || chord.strumParts > 0 || transition.slides;
+            const PlaybackPart = this._doc.synth.getCurrentPart();
+            const PlaybackHighlight = this._patternPlaybackMatchesVisible();
             for (const note of this._pattern.notes) {
                 let disabled = false;
                 if (this._doc.song.getChannelIsMod(this._doc.channel)) {
@@ -2494,6 +2549,10 @@ export class PatternEditor {
                     let notePath = SVG.path();
                     let colorPrimary = (disabled ? ColorConfig.disabledNotePrimary : ColorConfig.getChannelColor(this._doc.song, this._doc.channel).primaryNote);
                     let colorSecondary = (disabled ? ColorConfig.disabledNoteSecondary : ColorConfig.getChannelColor(this._doc.song, this._doc.channel).secondaryNote);
+                    if (PlaybackHighlight && !disabled && note.start <= PlaybackPart && note.end > PlaybackPart) {
+                        colorSecondary = this._mixNotePlayingFlash(colorSecondary);
+                        colorPrimary = this._mixNotePlayingFlash(colorPrimary);
+                    }
                     notePath.setAttribute("fill", colorSecondary);
                     notePath.setAttribute("pointer-events", "none");
                     this._drawNote(notePath, pitch, note.start, note.pins, (this._pitchHeight - this._pitchBorder) / 2 + 1, false, this._octaveOffset);
@@ -2583,7 +2642,7 @@ export class PatternEditor {
         this._doc.currentPatternIsDirty = false;
     }
 
-     _drawNote(svgElement, pitch, start, pins, radius, showSize, offset) {
+     _drawNotePathD(pitch, start, pins, radius, showSize, offset) {
         const totalWidth = this._partWidth * (pins[pins.length - 1].time + pins[0].time);
         const endOffset = 0.5 * Math.min(2, totalWidth - 1);
 
@@ -2623,7 +2682,21 @@ export class PatternEditor {
         }
         pathString += "z";
 
-        svgElement.setAttribute("d", pathString);
+        return pathString;
+    }
+
+     _drawNote(svgElement, pitch, start, pins, radius, showSize, offset) {
+        svgElement.setAttribute("d", this._drawNotePathD(pitch, start, pins, radius, showSize, offset));
+    }
+
+    _patternPlaybackMatchesVisible() {
+        if (!this._doc.synth.playing) return false;
+        const ViewBar = this._doc.bar + this._barOffset;
+        return Math.floor(this._doc.synth.playhead) === ViewBar;
+    }
+
+    _mixNotePlayingFlash(Fill) {
+        return `color-mix(in srgb, #ffffff 28%, ${Fill})`;
     }
 
      _pitchToPixelHeight(pitch) {

@@ -21,7 +21,10 @@ export class TrackEditor {
 	  __init5() {this._boxHighlight = SVG.rect({fill: "none", stroke: ColorConfig.hoverPreview, "stroke-width": 2, "pointer-events": "none", x: 1, y: 1, width: 30, height: 30})}
 	  __init6() {this._upHighlight = SVG.path({fill: ColorConfig.invertedText, stroke: ColorConfig.invertedText, "stroke-width": 1, "pointer-events": "none"})}
 	  __init7() {this._downHighlight = SVG.path({fill: ColorConfig.invertedText, stroke: ColorConfig.invertedText, "stroke-width": 1, "pointer-events": "none"})}
-	  __init8() {this._barEditorPath = SVG.path({ fill: ColorConfig.uiWidgetBackground, stroke: ColorConfig.uiWidgetBackground, "stroke-width": 1, "pointer-events": "none" })}
+	  __init8() {this._barEditorPath = SVG.path({ fill: ColorConfig.uiWidgetBackground, stroke: ColorConfig.uiWidgetBackground, "stroke-width": 1, "pointer-events": "none" });
+		this._loopBarLeftBorder = SVG.line({ stroke: ColorConfig.loopAccent, "stroke-width": 2, "pointer-events": "none", "stroke-linecap": "square", x1: "0", y1: "0", x2: "0", y2: "0" });
+		this._loopBarRightBorder = SVG.line({ stroke: ColorConfig.loopAccent, "stroke-width": 2, "pointer-events": "none", "stroke-linecap": "square", x1: "0", y1: "0", x2: "0", y2: "0" });
+	}
 	  __init9() {this._selectionRect = SVG.rect({ class: "dashed-line dash-move", fill: ColorConfig.boxSelectionFill, stroke: ColorConfig.hoverPreview, "stroke-width": 2, "stroke-dasharray": "5, 3", "fill-opacity": "0.4", "pointer-events": "none", visibility: "hidden", x: 1, y: 1, width: 62, height: 62 })}
 	  __init10() {this._svg = SVG.svg({style: `position: absolute; top: 0;`},
 		this._barEditorPath,
@@ -30,6 +33,8 @@ export class TrackEditor {
 		this._boxHighlight,
 		this._upHighlight,
 		this._downHighlight,
+		this._loopBarLeftBorder,
+		this._loopBarRightBorder,
 		this._playhead,
 	)}
 	  __init11() {this._select = HTML.select({class: "trackSelectBox", style: "background: none; border: none; appearance: none; border-radius: initial; box-shadow: none; color: transparent; position: absolute; touch-action: none;"})}
@@ -461,6 +466,20 @@ export class TrackEditor {
 			this._playhead.setAttribute("height", "" + editorHeight + Config.barEditorHeight);
 			this.container.style.height = (editorHeight + Config.barEditorHeight) + "px";
 		}
+
+		const Song = this._doc.song;
+		const PathTop = 1;
+		const PathBottom = Config.barEditorHeight + editorHeight - 2;
+		const LeftX = Song.loopStart * this._barWidth + 2;
+		const RightX = (Song.loopStart + Song.loopLength) * this._barWidth - 2;
+		this._loopBarLeftBorder.setAttribute("x1", String(LeftX));
+		this._loopBarLeftBorder.setAttribute("x2", String(LeftX));
+		this._loopBarLeftBorder.setAttribute("y1", String(PathTop));
+		this._loopBarLeftBorder.setAttribute("y2", String(PathBottom));
+		this._loopBarRightBorder.setAttribute("x1", String(RightX));
+		this._loopBarRightBorder.setAttribute("x2", String(RightX));
+		this._loopBarRightBorder.setAttribute("y1", String(PathTop));
+		this._loopBarRightBorder.setAttribute("y2", String(PathBottom));
 			
 		this._select.style.display = this._touchMode ? "" : "none";
 		

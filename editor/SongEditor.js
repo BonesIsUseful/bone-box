@@ -331,7 +331,7 @@ class CustomChipCanvas {
 }
 
 export class SongEditor {
-     __init6() {this.prompt = null}
+     __init6() {this.prompt = null; this._followPlayheadRampIntroBar = -1; this._followPlayheadRampComplete = false; this._followPlayheadWrapPrev = null}
 
       __init7() {this._keyboardLayout = new KeyboardLayout(this._doc)}
       __init8() {this._patternEditorPrev2 = new PatternEditor(this._doc, false, -2); this._patternEditorPrev = new PatternEditor(this._doc, false, -1)}
@@ -736,10 +736,12 @@ export class SongEditor {
         );
         this._patternEditorSideOverlayLeft = div({ class: "pattern-editor-side-overlay", style: "position: absolute; left: 0; top: 0; height: 100%; pointer-events: none;" });
         this._patternEditorSideOverlayRight = div({ class: "pattern-editor-side-overlay", style: "position: absolute; right: 0; top: 0; height: 100%; pointer-events: none;" });
+        this._patternEditorPlayheadOverlay = div({ style: `display: none; position: absolute; top: 0; height: 100%; width: 4px; margin: 0; padding: 0; pointer-events: none; z-index: 10; background: ${ColorConfig.playhead};` });
         this._patternEditorRow = div({ style: "flex: 1; height: 100%; display: flex; overflow: hidden; position: relative; justify-content: center;" },
             this._patternEditorGroup,
             this._patternEditorSideOverlayLeft,
             this._patternEditorSideOverlayRight,
+            this._patternEditorPlayheadOverlay,
         );
     }
       __init193() {this._patternArea = div({ class: "pattern-area" },
@@ -785,7 +787,7 @@ export class SongEditor {
         this._doc.prefs.save();
     });
 
-    this._chordStampArea = div({ class: "song-settings-area", style: "margin-top: 0px;" },
+    this._chordStampArea = div({ class: "song-settings-area" },
         div({ style: "text-align: center; color: " + ColorConfig.secondaryText + "; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; font-weight: bold; opacity: 0.8;" }, "Chord Stamp"),
         div({ class: "editor-controls" },
             div({ class: "selectRow" },
@@ -797,7 +799,7 @@ export class SongEditor {
 }
       __init200() {
         // Collaboration Components
-        this._collaborationToggle = button({ class: "party-btn", style: "width: 100%; margin-top: 5px; margin-bottom: 5px; padding: 6px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;" }, "Enable Collaboration");
+        this._collaborationToggle = button({ class: "party-btn", style: "width: 100%; margin: 5px 0; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s;" }, "Enable Collaboration");
         this._collaborationToggle.onclick = () => {
             const state = window.boneboxParty.getState();
             if (state.inParty) {
@@ -809,44 +811,50 @@ export class SongEditor {
             }
         };
 
-        this._roomCodeRow = div({ class: "selectRow", style: "display: none; margin: 5px 0; align-items: center;" },
-            span({ class: "tip", style: "font-size: 10px; flex-shrink: 0; width: 40px;" }, "Room: "),
-            div({ class: "selectContainer", style: "display: flex; gap: 5px; align-items: center; flex-grow: 1;" },
-                this._roomCodeInput = input({ type: "text", readonly: true, style: "flex-grow: 1; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: " + ColorConfig.primaryText + "; font-family: monospace; font-size: 14px; padding: 4px; text-align: center;" }),
-                button({ title: "Copy Code", style: "padding: 4px 6px; cursor: pointer; border-radius: 8px;", onclick: () => {
+        this._roomCodeRow = div({ class: "selectRow", style: "display: none; margin: 5px 0;" },
+            span({ class: "tip", style: "font-size: 10px; flex-shrink: 0;" }, "Room: "),
+            div({ style: "display: flex; gap: 5px; align-items: center; flex-grow: 1; min-width: 0;" },
+                this._roomCodeInput = input({ type: "text", readonly: true, style: "flex: 1; min-width: 0; background: " + ColorConfig.uiWidgetBackground + "; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: " + ColorConfig.primaryText + "; font-family: monospace; font-size: 12px; padding: 4px; text-align: center;" }),
+                button({ title: "Copy Code", style: "flex-shrink: 0; padding: 4px 8px; cursor: pointer; border-radius: 4px; background: " + ColorConfig.uiWidgetBackground + "; color: " + ColorConfig.primaryText + ";", onclick: () => {
                     navigator.clipboard.writeText(this._roomCodeInput.value);
                     alert("Room code copied!");
                 } }, "📋")
             )
         );
 
-        this._inviteLinkRow = div({ class: "selectRow", style: "display: none; margin: 5px 0; align-items: center;" },
-            span({ class: "tip", style: "font-size: 10px; flex-shrink: 0; width: 40px;" }, "Link: "),
-            div({ class: "selectContainer", style: "display: flex; gap: 4px; align-items: center; flex-grow: 1;" },
-                this._inviteLinkInput = input({ type: "text", readonly: true, style: "flex-grow: 1; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: " + ColorConfig.primaryText + "; font-size: 8px; padding: 4px;" }),
-                button({ title: "Copy Link", style: "padding: 4px 6px; cursor: pointer; border-radius: 4px;", onclick: () => {
+        this._inviteLinkRow = div({ class: "selectRow", style: "display: none; margin: 5px 0;" },
+            span({ class: "tip", style: "font-size: 10px; flex-shrink: 0;" }, "Link: "),
+            div({ style: "display: flex; gap: 5px; align-items: center; flex-grow: 1; min-width: 0;" },
+                this._inviteLinkInput = input({ type: "text", readonly: true, style: "flex: 1; min-width: 0; background: " + ColorConfig.uiWidgetBackground + "; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: " + ColorConfig.primaryText + "; font-size: 9px; padding: 4px; overflow: hidden; text-overflow: ellipsis;" }),
+                button({ title: "Copy Link", style: "flex-shrink: 0; padding: 4px 8px; cursor: pointer; border-radius: 4px; background: " + ColorConfig.uiWidgetBackground + "; color: " + ColorConfig.primaryText + ";", onclick: () => {
                     navigator.clipboard.writeText(this._inviteLinkInput.value);
                     alert("Invite link copied!");
                 } }, "📋")
             )
         );
 
-        this._joinRoomRow = div({ class: "selectRow", style: "margin: 8px 0; align-items: center;" },
-            span({ class: "tip", style: "font-size: 10px; flex-shrink: 0; width: 40px;" }, "Join: "),
-             div({ class: "selectContainer", style: "display: flex; gap: 5px; align-items: center; flex-grow: 1;" },
-                this._joinCodeInput = input({ type: "text", placeholder: "CODE", maxlength: "6", style: "width: 70px; text-transform: uppercase; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: " + ColorConfig.primaryText + "; padding: 4px; font-family: monospace;" }),
-                button({ style: "padding: 4px 10px; cursor: pointer; border-radius: 12px;", onclick: () => {
+        this._joinRoomRow = div({ class: "selectRow", style: "margin: 8px 0;" },
+            span({ class: "tip", style: "font-size: 10px; flex-shrink: 0;" }, "Join: "),
+             div({ style: "display: flex; gap: 5px; align-items: center; flex-grow: 1; min-width: 0;" },
+                this._joinCodeInput = input({ type: "text", placeholder: "CODE", maxlength: "6", style: "flex: 0 1 auto; width: 70px; text-transform: uppercase; background: " + ColorConfig.uiWidgetBackground + "; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: " + ColorConfig.primaryText + "; padding: 4px; font-family: monospace;" }),
+                button({ style: "flex-shrink: 0; padding: 4px 12px; cursor: pointer; border-radius: 4px; background: " + ColorConfig.uiWidgetBackground + "; color: " + ColorConfig.primaryText + ";", onclick: () => {
                     const code = this._joinCodeInput.value.trim();
                     if (code) window.boneboxParty.join(code);
                 } }, "Join")
             )
         );
 
-        this._collaborationGroup = div({ class: "song-settings-area", style: "margin-top: 0px;" },
+        this._memberListContainer = div({ style: "display: none; margin-top: 8px; padding: 8px; background: color-mix(in srgb, " + ColorConfig.uiWidgetBackground + " 50%, transparent); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;" },
+            div({ style: "font-size: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; color: " + ColorConfig.secondaryText + "; margin-bottom: 6px; opacity: 0.8;" }, "Room Members"),
+            this._memberList = div({ style: "display: flex; flex-direction: column; gap: 4px;" })
+        );
+
+        this._collaborationGroup = div({ class: "song-settings-area" },
             div({ style: "text-align: center; color: " + ColorConfig.secondaryText + "; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; font-weight: bold; opacity: 0.8;" }, "Collaboration"),
             this._collaborationToggle,
             this._roomCodeRow,
             this._inviteLinkRow,
+            this._memberListContainer,
             this._joinRoomRow
         );
 
@@ -1674,6 +1682,24 @@ export class SongEditor {
             this._patternEditorBarSeparator2.style.visibility = (this._doc.bar > 0) ? "visible" : "hidden";
             this._patternEditorBarSeparator3.style.visibility = (this._doc.bar < this._doc.song.barCount - 1) ? "visible" : "hidden";
             this._patternEditorBarSeparator4.style.visibility = (this._doc.bar < this._doc.song.barCount - 2) ? "visible" : "hidden";
+            const Song = this._doc.song;
+            const LoopStartNotch = Song.loopStart;
+            const LoopEndNotch = Song.loopStart + Song.loopLength;
+            const Bar = this._doc.bar;
+            const applyPatternSepLoopStyle = (Sep, NotchIndex) => {
+                const AtLoopBoundary = NotchIndex === LoopStartNotch || NotchIndex === LoopEndNotch;
+                if (AtLoopBoundary) {
+                    Sep.style.backgroundColor = ColorConfig.loopAccent;
+                    Sep.style.opacity = "1";
+                } else {
+                    Sep.style.backgroundColor = "";
+                    Sep.style.opacity = "";
+                }
+            };
+            applyPatternSepLoopStyle(this._patternEditorBarSeparator1, Bar - 1);
+            applyPatternSepLoopStyle(this._patternEditorBarSeparator2, Bar);
+            applyPatternSepLoopStyle(this._patternEditorBarSeparator3, Bar + 1);
+            applyPatternSepLoopStyle(this._patternEditorBarSeparator4, Bar + 2);
             const sideWidth = (this._patternEditorRow.clientWidth - patternEditorWidth) / 2;
             this._patternEditorSideOverlayLeft.style.width = sideWidth + "px";
             this._patternEditorSideOverlayRight.style.width = sideWidth + "px";
@@ -1690,6 +1716,14 @@ export class SongEditor {
             this._patternEditorBarSeparator2.style.visibility = "hidden";
             this._patternEditorBarSeparator3.style.visibility = "hidden";
             this._patternEditorBarSeparator4.style.visibility = "hidden";
+            this._patternEditorBarSeparator1.style.backgroundColor = "";
+            this._patternEditorBarSeparator1.style.opacity = "";
+            this._patternEditorBarSeparator2.style.backgroundColor = "";
+            this._patternEditorBarSeparator2.style.opacity = "";
+            this._patternEditorBarSeparator3.style.backgroundColor = "";
+            this._patternEditorBarSeparator3.style.opacity = "";
+            this._patternEditorBarSeparator4.style.backgroundColor = "";
+            this._patternEditorBarSeparator4.style.opacity = "";
             this._patternEditorPrev2.container.style.display = "none";
             this._patternEditorPrev.container.style.display = "none";
             this._patternEditorNext.container.style.display = "none";
@@ -3723,10 +3757,15 @@ export class SongEditor {
         if (this._doc.synth.playing) {
             this._doc.performance.pause();
             this._playbackStartBar = -1;
+            this._followPlayheadRampIntroBar = -1;
+            this._followPlayheadWrapPrev = null;
             this.outVolumeHistoricCap = 0;
         } else {
             this._playbackStartBar = this._doc.bar;
             this._doc.synth.snapToBar();
+            this._followPlayheadRampIntroBar = this._doc.bar;
+            this._followPlayheadRampComplete = false;
+            this._followPlayheadWrapPrev = null;
             this._doc.performance.play();
         }
     }}
@@ -3758,14 +3797,80 @@ export class SongEditor {
         if (this._doc.prefs.followPlayhead && this._doc.getFullScreen() && !this._doc.synth.recording) {
             const patternEditorWidth = this._patternEditor.container.clientWidth;
             const separatorWidth = 1;
-            const N = this._doc.song.barCount;
+            const Song = this._doc.song;
+            const LoopRepeat = this._doc.synth.loopRepeatCount;
+            const Looping = LoopRepeat !== 0;
+            const LoopEndExclusive = Song.loopStart + Song.loopLength;
+            const Bar = this._doc.bar;
+            const InsideLoop = Bar >= Song.loopStart && Bar < LoopEndExclusive;
+            const UseLoopSegmentEnd = Looping && InsideLoop;
+            const EffectiveEndBar = UseLoopSegmentEnd ? LoopEndExclusive : Song.barCount;
+            const LastBarIndex = EffectiveEndBar - 1;
             const pos = this._doc.synth.playhead;
             const startPos = (this._playbackStartBar != null && this._playbackStartBar >= 0) ? this._playbackStartBar : 0;
-            const cameraPos = this._doc.synth.playing ? Math.max(startPos + 0.5, Math.min(N - 0.5, pos)) : (this._doc.bar + 0.5);
-            const translateX = -(cameraPos - (this._doc.bar + 0.5)) * (patternEditorWidth + separatorWidth);
+            let cameraPos;
+            if (this._doc.synth.playing) {
+                if (startPos > 0 && pos < startPos - 0.01) {
+                    cameraPos = Math.max(0, Math.min(EffectiveEndBar, pos));
+                } else {
+                    cameraPos = Math.max(startPos, Math.min(EffectiveEndBar, pos));
+                }
+            } else {
+                cameraPos = this._doc.bar + 0.5;
+            }
+            let m = cameraPos - this._doc.bar;
+            if (m < 0) m = 0;
+            if (m > 1) m = 1;
+            if (this._doc.synth.playing && !this._followPlayheadRampComplete) {
+                if (this._doc.bar !== this._followPlayheadRampIntroBar) {
+                    this._followPlayheadRampComplete = true;
+                } else if (this._followPlayheadWrapPrev != null && pos < this._followPlayheadWrapPrev - 0.25) {
+                    this._followPlayheadRampComplete = true;
+                }
+            }
+            if (this._doc.synth.playing) {
+                this._followPlayheadWrapPrev = pos;
+            } else {
+                this._followPlayheadWrapPrev = null;
+            }
+            const cellW = patternEditorWidth + separatorWidth;
+            const onRampIntroBar = this._doc.synth.playing && !this._followPlayheadRampComplete && this._doc.bar === this._followPlayheadRampIntroBar;
+            const onLastBar = EffectiveEndBar > 0 && this._doc.bar === LastBarIndex;
+            const outroMirrorSecondHalf = this._doc.synth.playing && onLastBar && m > 0.5;
+            const introFirstHalf = onRampIntroBar && m <= 0.5;
+            const introSecondHalfNonLastBar = onRampIntroBar && m > 0.5 && !onLastBar;
+            let translateX;
+            if (!this._doc.synth.playing) {
+                translateX = 0;
+            } else if (introFirstHalf) {
+                translateX = 0;
+            } else if (outroMirrorSecondHalf) {
+                translateX = 0;
+            } else if (introSecondHalfNonLastBar) {
+                const scrollHalf = m > 0.5 ? (m - 0.5) : 0;
+                translateX = -scrollHalf * cellW;
+            } else {
+                translateX = -(m - 0.5) * cellW;
+            }
             this._patternEditorGroup.style.transform = `translateX(${translateX}px)`;
+            if (this._doc.synth.playing && patternEditorWidth > 0) {
+                const rowW = this._patternEditorRow.clientWidth;
+                let leftPx;
+                if (introFirstHalf) {
+                    leftPx = rowW / 2 - patternEditorWidth / 2 + m * patternEditorWidth - 2;
+                } else if (outroMirrorSecondHalf) {
+                    leftPx = rowW / 2 - 2 + (m - 0.5) * patternEditorWidth;
+                } else {
+                    leftPx = rowW / 2 - 2;
+                }
+                this._patternEditorPlayheadOverlay.style.display = "block";
+                this._patternEditorPlayheadOverlay.style.left = leftPx + "px";
+            } else {
+                this._patternEditorPlayheadOverlay.style.display = "none";
+            }
         } else {
             this._patternEditorGroup.style.transform = "";
+            this._patternEditorPlayheadOverlay.style.display = "none";
         }
 
         window.requestAnimationFrame(this._animate);
@@ -4384,7 +4489,7 @@ export class SongEditor {
         const state = window.boneboxParty.getState();
         if (state.inParty) {
             this._collaborationToggle.textContent = "Disable Collaboration";
-            this._collaborationToggle.style.background = "rgba(255, 100, 100, 0.2)";
+            this._collaborationToggle.style.background = "color-mix(in srgb, " + ColorConfig.uiWidgetBackground + " 60%, rgba(255, 100, 100, 0.4))";
             this._collaborationToggle.style.color = "#ff8080";
             this._collaborationToggle.style.border = "1px solid rgba(255, 100, 100, 0.4)";
             
@@ -4395,14 +4500,43 @@ export class SongEditor {
             const publicBase = "https://bonesisuseful.github.io/bone-box/invite.html";
             this._inviteLinkInput.value = publicBase + "?party=" + state.roomCode;
             this._joinRoomRow.style.display = "none";
+            
+            // Update member list
+            this._memberListContainer.style.display = "block";
+            this._memberList.innerHTML = "";
+            if (state.members && state.members.length > 0) {
+                state.members.forEach(member => {
+                    const isMe = member.name === state.myName;
+                    const memberDiv = div({ 
+                        style: "display: flex; align-items: center; gap: 6px; padding: 4px 6px; background: " + 
+                               (isMe ? "color-mix(in srgb, " + ColorConfig.linkAccent + " 20%, transparent)" : "rgba(255,255,255,0.03)") + 
+                               "; border-radius: 6px; font-size: 11px; border: 1px solid " + 
+                               (isMe ? "color-mix(in srgb, " + ColorConfig.linkAccent + " 30%, transparent)" : "rgba(255,255,255,0.05)") + ";" 
+                    },
+                        div({ 
+                            style: "width: 8px; height: 8px; border-radius: 50%; background: " + (member.color || ColorConfig.linkAccent) + "; flex-shrink: 0;" 
+                        }),
+                        span({ 
+                            style: "color: " + ColorConfig.primaryText + "; font-weight: " + (isMe ? "bold" : "normal") + "; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" 
+                        }, member.name + (isMe ? " (You)" : ""))
+                    );
+                    this._memberList.appendChild(memberDiv);
+                });
+            } else {
+                this._memberList.appendChild(
+                    div({ style: "text-align: center; color: " + ColorConfig.secondaryText + "; font-size: 10px; opacity: 0.6; padding: 8px 0;" }, 
+                        "No members yet")
+                );
+            }
         } else {
             this._collaborationToggle.textContent = "Enable Collaboration";
-            this._collaborationToggle.style.background = "linear-gradient(135deg, #7c4dff, #9c64f7)";
-            this._collaborationToggle.style.color = "white";
+            this._collaborationToggle.style.background = "linear-gradient(135deg, " + ColorConfig.linkAccent + ", color-mix(in srgb, " + ColorConfig.linkAccent + " 80%, white))";
+            this._collaborationToggle.style.color = ColorConfig.primaryText;
             this._collaborationToggle.style.border = "none";
             
             this._roomCodeRow.style.display = "none";
             this._inviteLinkRow.style.display = "none";
+            this._memberListContainer.style.display = "none";
             this._joinRoomRow.style.display = "flex";
         }
     }

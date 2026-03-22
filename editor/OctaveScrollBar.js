@@ -19,8 +19,8 @@ export class OctaveScrollBar {
 		  __init8() {this._upHighlight = SVG.path({fill: ColorConfig.hoverPreview, "pointer-events": "none"})}
 		  __init9() {this._downHighlight = SVG.path({fill: ColorConfig.hoverPreview, "pointer-events": "none"})}
 		
-	  __init10() {this._svg = SVG.svg({ style: "background-color: ${ColorConfig.editorBackground}; touch-action: pan-x; position: absolute;", width: this._editorWidth, height: "100%", viewBox: "0 0 20 " + this._editorHeight, preserveAspectRatio: "none" })}
-		  __init11() {this.container = HTML.div({id: "octaveScrollBarContainer", style: "width: 20px; height: 100%; overflow: hidden; position: relative; flex-shrink: 0;"}, this._svg)}
+	  __init10() {this._svg = SVG.svg({ style: "background-color: transparent; touch-action: pan-x; position: absolute; inset: 0;", width: this._editorWidth, height: "100%", viewBox: "0 0 20 " + this._editorHeight, preserveAspectRatio: "none" })}
+		  __init11() {this.container = HTML.div({ id: "octaveScrollBarContainer", class: "octave-scroll-bar-container", style: "width: 20px; height: 100%; overflow: hidden; position: relative; flex-shrink: 0; box-sizing: border-box;" }, this._svg)}
 		
 	//private _mouseX: number = 0;
 	 __init12() {this._mouseY = 0}

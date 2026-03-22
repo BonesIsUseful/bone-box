@@ -4,6 +4,7 @@ import { HTML, SVG } from "imperative-html/dist/esm/elements-strict";
 
 
 import { ColorConfig } from "./ColorConfig.js";
+import { bindRangeSliderFill } from "./HTMLWrapper.js";
 import { ChangeLimiterSettings } from "./changes.js";
 
 import { prettyNumber } from "./EditorConfig.js";
@@ -302,6 +303,14 @@ export class LimiterPrompt  {
 		this.compressionRatioSlider.addEventListener("input", this._whenInput);
 		this.compressionThresholdSlider.addEventListener("input", this._whenInput);
 		this.masterGainSlider.addEventListener("input", this._whenInput);
+
+		bindRangeSliderFill(this.limitDecaySlider);
+		bindRangeSliderFill(this.limitRiseSlider);
+		bindRangeSliderFill(this.compressionThresholdSlider);
+		bindRangeSliderFill(this.limitThresholdSlider);
+		bindRangeSliderFill(this.compressionRatioSlider);
+		bindRangeSliderFill(this.limitRatioSlider);
+		bindRangeSliderFill(this.masterGainSlider);
 
 		this._playButton.addEventListener("click", this._togglePlay);
 

@@ -7,6 +7,23 @@ import { HTML } from "imperative-html/dist/esm/elements-strict";
 
 const { span } = HTML;
 
+export function syncRangeSliderFill(Input) {
+	const Min = parseFloat(Input.min);
+	const Max = parseFloat(Input.max);
+	const Val = parseFloat(Input.value);
+	if (Number.isNaN(Min) || Number.isNaN(Max) || Number.isNaN(Val)) return;
+	const Span = Max - Min;
+	const Pct = Span === 0 ? 0 : Math.min(100, Math.max(0, ((Val - Min) / Span) * 100));
+	Input.style.setProperty("--slider-fill-pct", Pct + "%");
+}
+
+export function bindRangeSliderFill(Input) {
+	const OnSync = () => syncRangeSliderFill(Input);
+	OnSync();
+	Input.addEventListener("input", OnSync);
+	Input.addEventListener("change", OnSync);
+}
+
 export class InputBox {
 	 __init() {this._change = null}
 	 __init2() {this._value = ""}
@@ -46,14 +63,17 @@ export class Slider {
 		this.container = (midTick) ? span({ class: "midTick", style: "position: sticky; width: 61.5%;" }, input) : span({ style: "position: sticky;" }, input);
 		input.addEventListener("input", this._whenInput);
 		input.addEventListener("change", this._whenChange);
+		syncRangeSliderFill(input);
 	}
 
 	 updateValue(value) {
 		this._value = value;
 		this.input.value = String(value);
+		syncRangeSliderFill(this.input);
 	}
 
 	 __init9() {this._whenInput = () => {
+		syncRangeSliderFill(this.input);
 		const continuingProspectiveChange = this._doc.lastChangeWas(this._change);
 		if (!continuingProspectiveChange) this._oldValue = this._value;
 		if (this._getChange != null) {

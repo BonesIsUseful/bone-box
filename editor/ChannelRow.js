@@ -25,7 +25,7 @@ export class Box {
 		this.container.style.height = (height - 2) + "px"; // there's a 1 pixel margin on either side.
 	}
 	
-	 setIndex(index, selected, dim, color, isNoise, isMod) {
+	 setIndex(index, selected, dim, color, isNoise, isMod, inLoopRegion) {
 		if (this._renderedIndex != index) {			
 			if (index >= 100) {
 				this._label.setAttribute("font-size", "16");
@@ -53,9 +53,14 @@ export class Box {
 				color = dim ? ColorConfig.c_trackEditorBgPitchDim : ColorConfig.c_trackEditorBgPitch;
 		}
 		color = selected ? color : (index == 0) ? "none" : color;
-		if (this._renderedBackgroundColor != color) {
-			this.container.style.background = color;
-			this._renderedBackgroundColor = color;
+		let finalBg = color;
+		if (inLoopRegion) {
+			const Layer = ColorConfig.loopRegionTintLayer();
+			finalBg = color === "none" ? Layer : `${Layer}, ${color}`;
+		}
+		if (this._renderedBackgroundColor != finalBg) {
+			this.container.style.background = finalBg;
+			this._renderedBackgroundColor = finalBg;
 		}
 	}
 }
@@ -102,16 +107,19 @@ export class ChannelRow {
 			}
 		}
 		
+		const Song = this._doc.song;
+		const PartialLoop = Song.loopStart !== 0 || Song.loopLength !== Song.barCount;
 		for (let i = 0; i < this._boxes.length; i++) {
 			const pattern = this._doc.song.getPattern(this.index, i);
 			const selected = (i == this._doc.bar && this.index == this._doc.channel);
 			const dim = (pattern == null || pattern.notes.length == 0);
+			const InLoop = PartialLoop && i >= Song.loopStart && i < Song.loopStart + Song.loopLength;
 			
 			const box = this._boxes[i];
 			if (i < this._doc.song.barCount) {
 				const colors = ColorConfig.getChannelColor(this._doc.song, this.index);
 				box.setIndex(this._doc.song.channels[this.index].bars[i], selected, dim, dim && !selected ? colors.secondaryChannel : colors.primaryChannel,
-					this.index >= this._doc.song.pitchChannelCount && this.index < this._doc.song.pitchChannelCount + this._doc.song.noiseChannelCount, this.index >= this._doc.song.pitchChannelCount + this._doc.song.noiseChannelCount);
+					this.index >= this._doc.song.pitchChannelCount && this.index < this._doc.song.pitchChannelCount + this._doc.song.noiseChannelCount, this.index >= this._doc.song.pitchChannelCount + this._doc.song.noiseChannelCount, InLoop);
 				box.container.style.visibility = "visible";
 			} else {
 				box.container.style.visibility = "hidden";

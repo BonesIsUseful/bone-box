@@ -62,6 +62,9 @@ export class Preferences {
 		this.keyboardLayout = window.localStorage.getItem("keyboardLayout") || "wickiHayden";
 		this.bassOffset = (+(window.localStorage.getItem("bassOffset"))) || 0;
 		this.layout = window.localStorage.getItem("layout") || "long";
+		const tabPositionRaw = window.localStorage.getItem("tabPosition") || "top";
+		const tabPositionAllowed = ["top", "left", "right", "bottom"];
+		this.tabPosition = tabPositionAllowed.indexOf(tabPositionRaw) >= 0 ? tabPositionRaw : "top";
 		this.colorTheme = window.localStorage.getItem("colorTheme") || "bonebox classic";
 		this.followPlayhead = window.localStorage.getItem("followPlayhead") == "true";
 		this.visibleOctaves = ((window.localStorage.getItem("visibleOctaves")) >>> 0) || Preferences.defaultVisibleOctaves;
@@ -105,6 +108,7 @@ export class Preferences {
 		window.localStorage.setItem("keyboardLayout", this.keyboardLayout);
 		window.localStorage.setItem("bassOffset", String(this.bassOffset));
 		window.localStorage.setItem("layout", this.layout);
+		window.localStorage.setItem("tabPosition", this.tabPosition);
 		window.localStorage.setItem("colorTheme", this.colorTheme);
 		window.localStorage.setItem("volume", String(this.volume));
 		window.localStorage.setItem("followPlayhead", this.followPlayhead ? "true" : "false");

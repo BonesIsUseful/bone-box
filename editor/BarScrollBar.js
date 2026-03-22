@@ -34,7 +34,7 @@ export class BarScrollBar {
 	
 	
 	 __init16() {this._renderedNotchCount = -1}
-	 __init17() {this._renderedScrollBarPos = -1}
+	 __init17() {this._renderedScrollBarPos = -1; this._renderedLoopStart = -1; this._renderedLoopLength = -1}
 	
 	constructor( _doc) {;this._doc = _doc;BarScrollBar.prototype.__init.call(this);BarScrollBar.prototype.__init2.call(this);BarScrollBar.prototype.__init3.call(this);BarScrollBar.prototype.__init4.call(this);BarScrollBar.prototype.__init5.call(this);BarScrollBar.prototype.__init6.call(this);BarScrollBar.prototype.__init7.call(this);BarScrollBar.prototype.__init8.call(this);BarScrollBar.prototype.__init9.call(this);BarScrollBar.prototype.__init10.call(this);BarScrollBar.prototype.__init11.call(this);BarScrollBar.prototype.__init12.call(this);BarScrollBar.prototype.__init13.call(this);BarScrollBar.prototype.__init14.call(this);BarScrollBar.prototype.__init15.call(this);BarScrollBar.prototype.__init16.call(this);BarScrollBar.prototype.__init17.call(this);BarScrollBar.prototype.__init18.call(this);BarScrollBar.prototype.__init19.call(this);BarScrollBar.prototype.__init20.call(this);BarScrollBar.prototype.__init21.call(this);BarScrollBar.prototype.__init22.call(this);BarScrollBar.prototype.__init23.call(this);BarScrollBar.prototype.__init24.call(this);BarScrollBar.prototype.__init25.call(this);
 		const center = this._editorHeight * 0.5;
@@ -204,20 +204,28 @@ export class BarScrollBar {
 	 render() {
 			this._notchSpace = (this._editorWidth-1) / Math.max(this._doc.trackVisibleBars, this._doc.song.barCount);
 			
-		const resized = this._renderedNotchCount != this._doc.song.barCount;
-		if (resized) {
-			this._renderedNotchCount = this._doc.song.barCount;
+		const Song = this._doc.song;
+		const NotchesNeedRebuild = this._renderedNotchCount != Song.barCount
+			|| this._renderedLoopStart !== Song.loopStart
+			|| this._renderedLoopLength !== Song.loopLength;
+		if (NotchesNeedRebuild) {
+			this._renderedNotchCount = Song.barCount;
+			this._renderedLoopStart = Song.loopStart;
+			this._renderedLoopLength = Song.loopLength;
 				
 			while (this._notches.firstChild) this._notches.removeChild(this._notches.firstChild);
 				
-			for (let i = 0; i <= this._doc.song.barCount; i++) {
+			for (let i = 0; i <= Song.barCount; i++) {
 				const lineHeight = (i % 16 == 0) ? 0 : ((i % 4 == 0) ? this._editorHeight / 8 : this._editorHeight / 3);
-					this._notches.appendChild(SVG.rect({fill: ColorConfig.uiWidgetBackground, x: i * this._notchSpace - 1, y: lineHeight, width: 2, height: this._editorHeight - lineHeight * 2}));
+				const AtLoopStart = i === Song.loopStart;
+				const AtLoopEnd = i === Song.loopStart + Song.loopLength;
+				const NotchFill = (AtLoopStart || AtLoopEnd) ? ColorConfig.loopAccent : ColorConfig.uiWidgetBackground;
+				this._notches.appendChild(SVG.rect({ fill: NotchFill, x: i * this._notchSpace - 1, y: lineHeight, width: 2, height: this._editorHeight - lineHeight * 2 }));
 			}
 		}
 		
 		
-		if (resized || this._renderedScrollBarPos != this._doc.barScrollPos) {
+		if (NotchesNeedRebuild || this._renderedScrollBarPos != this._doc.barScrollPos) {
 			this._renderedScrollBarPos = this._doc.barScrollPos;
 			this._handle.setAttribute("x", String(this._notchSpace * this._doc.barScrollPos));
 			this._handle.setAttribute("width", String(this._notchSpace * this._doc.trackVisibleBars));
